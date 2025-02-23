@@ -1,0 +1,48 @@
+{% extends 'myapp/layout.html' %}
+
+{% block title %} Register {% endblock %}
+
+{% load static %}
+
+{% block content %}
+<div class="form-custom-gradient p-4 border rounded w-75 w-sm-75 mx-auto my-1 p-auto">
+
+    <img src="{% static 'img/logowhite.png' %}" alt="logo" width="15%" height="15%" class="mb-3 mx-auto d-block">
+    <h3 class="mb-3 text-secondary">Create An User</h3>
+
+    {% if form.non_field_errors %}
+    <div class="alert alert-danger">
+        {% for error in form.non_field_errors %}
+            <p>{{ error }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+        
+    <form method="post">
+        {% csrf_token %}
+        
+        {% for field in form %}
+            <div class="mb-3">
+                {{ field.label_tag }}
+                {{ field }}
+
+
+                {% if field.errors %}
+                    <div class="text-danger mt-2">
+                        {% for error in field.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+
+        <div class="d-flex justify-content-between mt-4">
+            <a href="{% url 'homepage' %}" class="text-decoration-none text-secondary link-secondary">Back to home...</a>
+            <button type="submit" class="btn btn-outline-primary">Create</button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

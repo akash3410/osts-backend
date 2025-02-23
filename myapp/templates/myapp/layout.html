@@ -30,9 +30,6 @@
     <!-- Bootstrap CSS (in <head> section) -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Customized Bootstrap Stylesheet -->
-    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
-
 
 
     <!-- Template Stylesheet -->
@@ -64,6 +61,16 @@
                 background-color: #013357a4;
             }
         }
+
+        label{
+            margin-bottom: 3px;
+        }
+
+        .form-custom-gradient {
+            background: linear-gradient(to left, #11004ddc, #11004eee);
+            box-shadow: 5px 5px 10px #11004d8e;
+            color: white;
+        }
     </style>
 </head>
 
@@ -75,58 +82,6 @@
         </div>
     </div>
     <!-- Spinner End -->
-
-
-    <!-- Navbar Start -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-transparent position-absolute shadow" id="navigation">
-        <div class="container-fluid">
-            <!-- Offcanvas Toggle Button -->
-            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-    
-            <a href="index.html" class="navbar-brand">
-                <img src="{% static 'img/logowhite.png' %}" alt="" height="50">
-            </a>
-    
-            <!-- Offcanvas Sidebar -->
-            <div class="offcanvas offcanvas-start w-50" id="offcanvasNavbar">
-                <div class="offcanvas-header">
-                    <h5 class="offcanvas-title">Menu</h5>
-                    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
-                </div>
-                <div class="offcanvas-body">
-                    <ul class="navbar-nav ms-auto">
-                        <li class="nav-item">
-                            <a href="{% url 'homepage' %}" class="nav-link {% if request.path == '/' %}active{% endif %}">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{% url 'aboutpage' %}" class="nav-link {% if request.path == '/about/' %}active{% endif %}">About</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{% url 'servicepage' %}" class="nav-link">Services</a>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
-                            <ul class="dropdown-menu">
-                                <li><a href="price.html" class="dropdown-item">Pricing Plan</a></li>
-                                <li><a href="feature.html" class="dropdown-item">Features</a></li>
-                                <li><a href="quote.html" class="dropdown-item">Free Quote</a></li>
-                                <li><a href="team.html" class="dropdown-item">Our Team</a></li>
-                                <li><a href="testimonial.html" class="dropdown-item">Testimonial</a></li>
-                                <li><a href="404.html" class="dropdown-item">404 Page</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{% url 'contactepage' %}" class="nav-link">Contact</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </nav>
-    
-    <!-- Navbar End -->
 
     {% block content %}
     {% endblock %}

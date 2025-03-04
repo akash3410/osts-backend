@@ -36,13 +36,13 @@
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
 
     <style>
-        .navbar {
+        .navbar-styling {
                 width: 100%;
                 transition: background 0.3s ease-in-out, padding 0.3s ease-in-out;
                 z-index: 1000;
             }
 
-        .sticky {
+        .sticky-styling {
             position: fixed !important;
             top: 0;
             width: 100%;
@@ -174,14 +174,18 @@
         
             window.addEventListener("scroll", function () {
                 if (window.scrollY > 200) {  // If the user scrolls down 100px
-                    navbar.classList.add("sticky");  // Add sticky class
+                    navbar.classList.add("sticky-styling");  // Add sticky class
                     navbar.classList.remove("bg-transparent"); // Remove transparency
                 } else {
-                    navbar.classList.remove("sticky"); // Remove sticky class
+                    navbar.classList.remove("sticky-styling"); // Remove sticky class
                     navbar.classList.add("bg-transparent"); // Make transparent again
                 }
             });
         });
+
+        setTimeout(() => {
+            document.getElementById("messsage").style.display = "none";
+        }, 5000)
     </script>
 
 </body>

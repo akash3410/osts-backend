@@ -10,8 +10,14 @@
 
     <h3 class="mb-3 text-secondary">Login</h3>
 
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-danger" id="messsage">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
     {% if form.non_field_errors %}
-    <div class="alert alert-danger">
+    <div class="alert alert-danger" id="messsage">
         {% for error in form.non_field_errors %}
             <p>{{ error }}</p>
         {% endfor %}

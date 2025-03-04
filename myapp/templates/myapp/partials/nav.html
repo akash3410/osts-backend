@@ -1,6 +1,6 @@
 {% load static %}
 <!-- Navbar Start -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-transparent position-absolute shadow" id="navigation">
+<nav class="navbar navbar-styling navbar-expand-lg navbar-dark bg-transparent position-absolute shadow" id="navigation">
     <div class="container-fluid">
         <!-- Offcanvas Toggle Button -->
         <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar">
@@ -44,7 +44,7 @@
                     </li>
 
                     
-                    {% if user.is_authenticated %}
+                    {% if user.is_staff %}
                         <li class="nav-item">
                             <a href="{% url 'dashboard' %}" class="nav-link">Dashboard</a>
                         </li>
@@ -56,7 +56,7 @@
                                 <a href="{% url 'register' %}" class="nav-link">Create an User</a>
                             </li>
                         {% endif %}
-                    {%else%}
+                    {% else %}
                         <li class="nav-item">
                             <a href="{% url 'login' %}" class="nav-link">Login</a>
                         </li>

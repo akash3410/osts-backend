@@ -11,7 +11,7 @@
     <h3 class="mb-3 text-secondary">Create An User</h3>
 
     {% if form.non_field_errors %}
-    <div class="alert alert-danger">
+    <div class="alert alert-danger" id="messsage">
         {% for error in form.non_field_errors %}
             <p>{{ error }}</p>
         {% endfor %}

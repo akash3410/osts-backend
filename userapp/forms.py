@@ -80,3 +80,16 @@ class UserInfoForm(forms.ModelForm):
     class Meta:
         model = Userinfo
         fields = ['phone', 'secondary_email', 'present_address', 'permanent_address', 'profile_picture', 'cover_photo']
+
+class UpdateUserForm(forms.ModelForm):
+    first_name = forms.CharField(
+        label="First Name",
+        widget=forms.TextInput(attrs={'placeholder': "First Name", 'class': 'form-control'})
+    )
+    last_name = forms.CharField(
+        label="Last Name",
+        widget=forms.TextInput(attrs={'placeholder': "Last Name", 'class': 'form-control'})
+    )
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name']

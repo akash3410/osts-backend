@@ -2,7 +2,7 @@
 <div class="sidebar-logo">
     <!-- Logo Header -->
     <div class="logo-header" data-background-color="dark">
-        <a href="index.html" class="logo fs-3 text-white fw-bolder">
+        <a href="{% url 'homepage' %}" class="logo fs-3 text-white fw-bolder">
             <img
             src="{% static 'img/kaiadmin/logowhite.png' %}"
             alt="navbar brand"
@@ -30,25 +30,10 @@
     <div class="sidebar-content">
         <ul class="nav nav-secondary">
             <li class="nav-item active">
-                <a
-                    data-bs-toggle="collapse"
-                    href="#dashboard"
-                    class="collapsed"
-                    aria-expanded="false"
-                >
+                <a href="{% url 'dashboard' %}">
                     <i class="fas fa-home"></i>
-                    <p>Dashboard</p>
-                    <span class="caret"></span>
+                    Dashboard
                 </a>
-                <div class="collapse" id="dashboard">
-                    <ul class="nav nav-collapse">
-                        <li>
-                            <a href="../demo1/index.html">
-                                <span class="sub-item">Dashboard 1</span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
             </li>
             <li class="nav-section">
                 <span class="sidebar-mini-icon">
@@ -65,8 +50,8 @@
                 <div class="collapse" id="base">
                     <ul class="nav nav-collapse">
                         <li>
-                            <a href="components/avatars.html">
-                                <span class="sub-item">Avatars</span>
+                            <a href="{% url 'service' %}">
+                                <span class="sub-item">Services</span>
                             </a>
                         </li>
                         <li>

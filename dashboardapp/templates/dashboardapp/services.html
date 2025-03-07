@@ -1,0 +1,97 @@
+{% extends 'dashboardapp/index.html' %}
+
+{% block title %} Profile {% endblock%}
+
+{% block content %}
+{% include 'dashboardapp/partials/nav.html' %}
+
+<div class="container">
+    <div class="m-4">
+        <h2 class="">All Foods</h2>
+    
+        <nav class="navbar navbar-expand-lg bg-body-tertiary mb-3">
+            <div class="container-fluid">
+                <form class="d-flex" role="search">
+                    <input class="form-control me-2 mt-3" type="search" placeholder="search foods" aria-label="Search">
+                </form>
+                <form class="d-flex" role="search">
+                    <input class="form-control me-2 mt-3" type="search" placeholder="sort by" aria-label="Search">
+                </form>
+                <div class="collapse navbar-collapse d-flex justify-content-lg-end justify-content-sm-start" id="navbarNavAltMarkup">
+                    <div class="navbar-nav">
+                        <a class="btn btn-primary me-2 mt-3" href="{% url 'addservice' %}">Add New Service</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">no.</th>
+                    <th scope="col" class="text-align-center">Title</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Updated At</th>
+                    <th scope="col">Available</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for service in services %}
+                    <tr class="">
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td>
+                            <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#serviceModal{{service.id}}" data-bs-whatever="@mdo">{{service.title}}</button>
+    
+                            <div class="modal fade" id="serviceModal{{ service.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Service Details</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="card">
+                                                <img src="{{ service.image.url }}" class="card-img-top" alt="{{ food.title }}">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">{{service.title}}</h5>
+                                                    <p class="card-text">{{service.description}}</p>
+                                                    <p class="card-text"><span class="fw-bolder ">Create: </span> {{service.updated_at}} </p>
+                                                    <p class="card-text"><span class="fw-bolder">Price: </span> {{service.price}} </p>
+                                                    {% if service.is_active == True %}
+                                                        <p class="card-text fw-bolder">Status: <span class="text-success"> On Going </span> </p>
+                                                    {% else %}
+                                                        <p class="card-text fw-bolder">Status: <span class="text-danger"> Stoped </span> </p>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{service.price}}</td>
+                        <td>{{service.updated_at}}</td>
+                        <td>
+                            {% if service.is_active == True %}
+                                <i class="fa-solid fa-check text-success fs-4 ms-3"></i>
+                            {% else %}
+                                <i class="fa-solid fa-xmark text-danger fs-4 ms-3"></i>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'editservice' service.id %}" class="text-black fs-3 me-3">
+                                <i class="fa-solid fa-pen-to-square" style="font-size: large;"></i>
+                            </a>
+                            |
+                            <a href="{% url 'deleteservice' service.id %}" class="text-danger fs-5 ms-3">
+                                <i class="fa-solid fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

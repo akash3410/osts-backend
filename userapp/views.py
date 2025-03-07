@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
-from .forms import LoginForm, RegisterForm, UserInfoForm
+from .forms import LoginForm, RegisterForm, UserInfoForm, UpdateUserForm
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from .models import Userinfo
@@ -55,9 +55,16 @@ def edit_user_info(request):
 
     if request.method == 'POST':
         form = UserInfoForm(request.POST, request.FILES, instance=user.userinfo)
-        if form.is_valid():
+        userform = UpdateUserForm(request.POST, instance=user)
+        if form.is_valid() and userform.is_valid():
             form.save()
+            userform.save()
             return redirect('dashboard')
     else:
         form = UserInfoForm(instance=user.userinfo)
-    return render(request, 'userapp/editUserInfo.html', {'form': form})
+        userform = UpdateUserForm(instance=user)
+    return render(request, 'userapp/editUserInfo.html', {'form': form, 'userform': userform})
+
+@user_passes_test(superuser_or_staffuser_required)
+def profile_view(request):
+    return render(request, 'userapp/profile.html')

@@ -1,8 +1,14 @@
 from django.shortcuts import render
+from dashboardapp.models import Service
 
 # Create your views here.
 def home_view(request):
-    return render(request, 'myapp/index.html')
+    services = Service.objects.filter(is_active=True)
+
+    context = {
+        'services': services
+    }
+    return render(request, 'myapp/index.html', context)
 
 
 def about_view(request):

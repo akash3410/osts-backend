@@ -1,0 +1,157 @@
+{% extends 'myapp/layout.html' %}
+
+{% block title %} Settings {% endblock %}
+
+{% load static %}
+
+{% block content %}
+<div class="form-custom-gradient p-4 border rounded w-75 w-sm-75 mx-auto my-1 p-auto">
+
+    <img src="{% static 'img/logowhite.png' %}" alt="logo" width="15%" height="15%" class="mb-3 mx-auto d-block">
+    <h3 class="mb-3 text-secondary">{{ form_for }}</h3>
+
+    {% if form.non_field_errors %}
+    <div class="alert alert-danger" id="messsage">
+        {% for error in form.non_field_errors %}
+            <p>{{ error }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+        
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="row">
+            <h3 class="mt-3">Site Information</h3>
+            <hr>
+            <div class="col-4">
+                <div class="mb-3">
+                    <label for="id_image1">Site Background: </label>
+                    <img id="imagePreview1" src="" alt="Selected Image" style="max-width: 200px; display: none; margin-bottom: 10px;">
+                    <br>
+                    {{ form.site_bg }}
+                </div>
+                <div class="mb-3">
+                    <label for="id_image2">Site Logo: </label>
+                    <img id="imagePreview2" src="" alt="Selected Image" style="max-width: 200px; display: none; margin-bottom: 10px;">
+                    <br>
+                    {{ form.site_logo }}
+                </div>
+            </div>
+
+            <div class="col-8">
+                <div class="mb-3">
+                    {{ form.site_name.label_tag }}
+                    {{ form.site_name }}
+                </div>
+                <div class="mb-3">
+                    {{ form.site_mail.label_tag }}
+                    {{ form.site_mail }}
+                </div>
+                <div class="mb-3">
+                    {{ form.site_phone.label_tag }}
+                    {{ form.site_phone }}
+                </div>
+                <div class="mb-3">
+                    {{ form.site_address.label_tag }}
+                    {{ form.site_address }}
+                </div>
+                <div class="mb-3">
+                    {{ form.fb_page.label_tag }}
+                    {{ form.fb_page }}
+                </div>
+                <div class="mb-3">
+                    {{ form.linkedIn.label_tag }}
+                    {{ form.linkedIn }}
+                </div>
+                <div class="mb-3">
+                    {{ form.contact_description.label_tag }}
+                    {{ form.contact_description }}
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <h3 class="mt-3">About Information</h3>
+            <hr>
+            <div class="col-4">
+                <div class="mb-3">
+                    <label for="id_image3">About Image: </label>
+                    <img id="imagePreview3" src="" alt="Selected Image" style="max-width: 200px; display: none; margin-bottom: 10px;">
+                    <br>
+                    {{ form.about_image }}
+                </div>
+            </div>
+
+            <div class="col-8">
+                <div class="mb-3">
+                    {{ form.about_title.label_tag }}
+                    {{ form.about_title }}
+                </div>
+                <div class="mb-3">
+                    {{ form.about_description.label_tag }}
+                    {{ form.about_description }}
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <h3 class="mt-3">Fact Information</h3>
+            <hr>
+            <div class="mb-3">
+                {{ form.fact_title.label_tag }}
+                {{ form.fact_title }}
+            </div>
+            <div class="mb-3">
+                {{ form.fact_description.label_tag }}
+                {{ form.fact_description }}
+            </div>
+            <hr>
+            <div class="mb-3">
+                {{ form.maintenance_mode.label_tag }}
+                {{ form.maintenance_mode }}
+            </div>
+        </div>
+
+        {% for field in form %}
+            {% if field.errors %}
+                <div class="text-danger mt-2">
+                    {% for error in field.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endfor %}
+
+
+        <div class="d-flex justify-content-between mt-4">
+            <a href="{% url 'service' %}" class="text-decoration-none text-secondary link-secondary">Cancel</a>
+            <button type="submit" class="btn btn-outline-primary">Save</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll('input[type="file"]').forEach(input => {
+            input.addEventListener("change", function (event) {
+                var file = event.target.files[0]; // Get selected file
+                var previewId = event.target.dataset.preview; // Get corresponding preview ID
+                var imagePreview = document.getElementById(previewId); // Get preview element
+
+                if (file) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        imagePreview.src = e.target.result;
+                        imagePreview.style.display = "block"; // Show the image
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    imagePreview.style.display = "none"; // Hide preview if no file selected
+                }
+            });
+        });
+    });
+</script>
+    
+{% endblock %}

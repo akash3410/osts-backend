@@ -13,37 +13,71 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-7">
+            <div class="col-lg-7" id="send-message">
                 <div class="bg-light text-center p-5 wow fadeIn" data-wow-delay="0.5s">
-                    <form>
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger" id="messsage">
+                            {% for error in form.non_field_errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    {% for message in messages %}
+                        {% if message %}
+                            <p class="alert alert-success" id="success-message"> {{ message }} </p>
+                        {% endif %}
+                    {% endfor %}
+
+                    <form method="post">
+                        {% csrf_token %}
                         <div class="row g-3">
                             <div class="col-12 col-sm-6">
-                                <input type="text" class="form-control border-0" placeholder="Your Name" style="height: 55px;">
+                                {{ form.name }}
                             </div>
                             <div class="col-12 col-sm-6">
-                                <input type="email" class="form-control border-0" placeholder="Your Email" style="height: 55px;">
+                                {{ form.email }}
                             </div>
                             <div class="col-12 col-sm-6">
-                                <input type="text" class="form-control border-0" placeholder="Your Mobile" style="height: 55px;">
+                                {{ form.phone }}
                             </div>
                             <div class="col-12 col-sm-6">
-                                <select class="form-select border-0" style="height: 55px;">
-                                    <option selected>Select A Freight</option>
-                                    <option value="1">Freight 1</option>
-                                    <option value="2">Freight 2</option>
-                                    <option value="3">Freight 3</option>
-                                </select>
+                                {{ form.service }}
                             </div>
                             <div class="col-12">
-                                <textarea class="form-control border-0" placeholder="Special Note"></textarea>
+                                {{ form.note }}
                             </div>
                             <div class="col-12">
                                 <button class="btn btn-primary w-100 py-3" type="submit">Submit</button>
                             </div>
                         </div>
                     </form>
+                    {% for field in form %}
+                        {% if field.errors %}
+                            <div class="text-danger mt-2">
+                                {% for error in field.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+    let messageBox = document.getElementById("success-message");
+
+    // Automatically hide the success message after 3 seconds (3000ms)
+        if (messageBox) {
+            setTimeout(function() {
+                messageBox.style.transition = "opacity 0.5s ease-out";
+                messageBox.style.opacity = "0";
+                setTimeout(() => messageBox.style.display = "none", 500);
+            }, 3000);
+        }
+    });
+</script>

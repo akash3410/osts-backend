@@ -24,6 +24,7 @@ urlpatterns = [
     path('', include('myapp.urls')),
     path('user/', include('userapp.urls')),
     path('user/dashboard/', include('dashboardapp.urls')),
+    path('user/dashboard/core/', include('core.urls')),
 ]
 
 if settings.DEBUG:

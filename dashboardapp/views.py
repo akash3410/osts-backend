@@ -58,3 +58,6 @@ def delete_service(request, pk):
 
     service.delete()
     return redirect('service')
+
+def sites_info_view(request):
+    return render(request, 'dashboardapp/siteinfo.html')

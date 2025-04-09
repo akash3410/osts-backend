@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import user_passes_test
 from .forms import ServiceForm
 from .models import Service
+from myapp.models import Messages
+from django.contrib import messages
 
 # Create your views here.
 def superuser_or_staff_required(user):
@@ -59,5 +61,29 @@ def delete_service(request, pk):
     service.delete()
     return redirect('service')
 
+@user_passes_test(superuser_or_staff_required)
 def sites_info_view(request):
     return render(request, 'dashboardapp/siteinfo.html')
+
+@user_passes_test(superuser_or_staff_required)
+def all_message_view(request):
+    messages = Messages.objects.all().order_by("response")
+
+    context = {
+        "allmessage": messages
+    }
+    return render(request, 'dashboardapp/messages.html', context)
+
+@user_passes_test(superuser_or_staff_required)
+def response_update_view(request, pk):
+    message = get_object_or_404(Messages, pk=pk)
+    message.response = not message.response
+    message.save()
+    messages.success(request, f"{message.name}'s Response Updated!")
+    return redirect("allmessage")
+
+def message_delete_view(requset, pk):
+    message = get_object_or_404(Messages, pk=pk)
+    message.delete()
+    messages.success(requset, f"{message.name}'s message Deleted!")
+    return redirect('allmessage')

@@ -23,11 +23,11 @@
                         </div>
                     {% endif %}
 
-                    {% for message in messages %}
-                        {% if message %}
+                    {% if messages %}
+                        {% for message in messages %}
                             <p class="alert alert-success" id="success-message"> {{ message }} </p>
-                        {% endif %}
-                    {% endfor %}
+                        {% endfor %}
+                    {% endif %}
 
                     <form method="post">
                         {% csrf_token %}

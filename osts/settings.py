@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'dashboardapp',
     'phonenumber_field',
     'core',
+    'django.contrib.humanize'
 ]
 
 MIDDLEWARE = [
@@ -69,6 +70,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'core.context_processors.site_configuration',
+                'core.context_processors.message_in_box',
             ],
         },
     },

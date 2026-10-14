@@ -1340,11 +1340,23 @@ body {
 /* ---------- Floating glass navbar — dock-style selection ---------- */
 .navbar-styling {
     position: fixed !important;
-    top: 16px;
+    top: 8px;
     left: 0;
     right: 0;
     z-index: 1060;
     padding: 0 16px;
+    transition: transform .3s cubic-bezier(.4, 0, .2, 1);
+}
+
+/* Hide navbar while scrolling down, reappear on scroll up (JS toggles this) */
+.navbar-styling.nav-hidden {
+    transform: translateY(calc(-100% - 8px));
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .navbar-styling {
+        transition: none;
+    }
 }
 
 .navbar-styling > .container-fluid {
@@ -1356,17 +1368,23 @@ body {
     margin: 0 auto;
     padding: 6px 10px 6px 18px;
     border-radius: 999px;
-    background: rgba(9, 26, 58, .48);
-    backdrop-filter: blur(18px) saturate(150%);
-    -webkit-backdrop-filter: blur(18px) saturate(150%);
-    border: 1px solid rgba(255, 255, 255, .16);
-    box-shadow: 0 12px 34px rgba(2, 10, 30, .38), inset 0 1px 0 rgba(255, 255, 255, .18);
-    transition: background .35s ease, box-shadow .35s ease, padding .3s ease;
+    /* Initial state: completely invisible — no fill, border, shadow or blur.
+       The glass pill fades in on scroll via .sticky-styling. */
+    background: transparent;
+    border: 1px solid transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    transition: background .35s ease, border-color .35s ease, box-shadow .35s ease,
+                backdrop-filter .35s ease, padding .3s ease;
 }
 
 .navbar-styling.sticky-styling > .container-fluid {
     background: rgba(7, 20, 44, .8);
+    border-color: rgba(255, 255, 255, .16);
     box-shadow: 0 16px 44px rgba(2, 10, 30, .5), inset 0 1px 0 rgba(255, 255, 255, .14);
+    backdrop-filter: blur(18px) saturate(150%);
+    -webkit-backdrop-filter: blur(18px) saturate(150%);
     padding: 4px 10px 4px 18px;
 }
 
@@ -1493,16 +1511,20 @@ body {
     }
 }
 
-.dock-link.active .dock-ico {
-    background: #FFFFFF;
-    border-color: #FFFFFF;
-    color: var(--primary);
-    transform: translateY(-20px) scale(1.06);
-    box-shadow: 0 12px 24px rgba(2, 10, 30, .4);
-}
+/* Active state lift is a desktop-dock effect (icon circles sit above labels);
+   on mobile the offcanvas rows use .nav-offcanvas .dock-link.active instead. */
+@media (min-width: 992px) {
+    .dock-link.active .dock-ico {
+        background: #FFFFFF;
+        border-color: #FFFFFF;
+        color: var(--primary);
+        transform: translateY(-20px) scale(1.06);
+        box-shadow: 0 12px 24px rgba(2, 10, 30, .4);
+    }
 
-.dock-link.active .dock-label {
-    color: #FFFFFF;
+    .dock-link.active .dock-label {
+        color: #FFFFFF;
+    }
 }
 
 /* ---------- Dropdown on hover — smooth fade/slide ---------- */
@@ -1636,6 +1658,34 @@ body {
         -webkit-backdrop-filter: blur(20px);
         border-right: 1px solid rgba(255, 255, 255, .12);
         color: #FFFFFF;
+    }
+
+    /* The glass pill's backdrop-filter would make it the containing block for
+       the fixed-position offcanvas panel, trapping it inside the ~60px pill
+       (panel collapsed, nav items clipped/invisible on mobile). Keep the pill
+       itself filter-free ALWAYS (even .sticky-styling) and move the blur to a
+       ::after layer, so the panel stays positioned against the viewport. */
+    .navbar-styling > .container-fluid,
+    .navbar-styling.sticky-styling > .container-fluid {
+        position: relative;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+    }
+
+    .navbar-styling > .container-fluid::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        border-radius: inherit;
+        pointer-events: none;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+    }
+
+    .navbar-styling.sticky-styling > .container-fluid::after {
+        backdrop-filter: blur(18px) saturate(150%);
+        -webkit-backdrop-filter: blur(18px) saturate(150%);
     }
 }
 

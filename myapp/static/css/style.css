@@ -483,16 +483,11 @@
 /*** ========================================================= ***/
 
 /* ---------- Typography ---------- */
-html {
-    background: #071329; /* dark base visible on overscroll, matches site-bg */
-}
+/* html/body backgrounds live in css/site-bg.css (animated background base) */
 
 body {
     font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
     color: #334155;
-    /* Bootstrap Reboot paints body #fff, which hides the z-index:-1 site-bg.
-       Transparent body lets the fixed animated layer show through. */
-    background: transparent !important;
 }
 
 .section-title {
@@ -854,14 +849,8 @@ body {
     }
 }
 
-/* ---------- Full-site animated background (fixed layer) ---------- */
-.site-bg {
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    overflow: hidden;
-    background: linear-gradient(160deg, #061026 0%, #0A1F44 45%, #0B3B8F 100%);
-}
+/* Full-site animated background styles (.site-bg, .hero-aurora, .hero-glow,
+   .hero-particles) live in css/site-bg.css — shared with the auth page. */
 
 /* ---------- Floating sections: fully transparent over animated bg ---------- */
 .float-panel {
@@ -1002,66 +991,7 @@ body {
     pointer-events: none;
 }
 
-/* soft animated glows (slow drift) */
-.hero-glow {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(90px);
-    opacity: .4;
-    pointer-events: none;
-    animation: glowDrift 18s ease-in-out infinite alternate;
-}
-
-@keyframes glowDrift {
-    from { transform: translate3d(0, 0, 0) scale(1); }
-    to   { transform: translate3d(-45px, 32px, 0) scale(1.12); }
-}
-
-.hero-glow-1 {
-    width: 480px;
-    height: 480px;
-    background: #3D8BFD;
-    top: -140px;
-    right: -90px;
-}
-
-.hero-glow-2 {
-    width: 420px;
-    height: 420px;
-    background: #062a5e;
-    bottom: -160px;
-    left: -110px;
-    animation-delay: -9s;
-}
-
-/* animated aurora gradient (shifting mesh) */
-.hero-aurora {
-    position: absolute;
-    inset: -20%;
-    background:
-        radial-gradient(45% 55% at 22% 30%, rgba(61, 139, 253, .55), transparent 70%),
-        radial-gradient(40% 50% at 78% 22%, rgba(125, 192, 255, .45), transparent 70%),
-        radial-gradient(50% 60% at 60% 85%, rgba(11, 94, 215, .55), transparent 72%),
-        radial-gradient(35% 45% at 12% 80%, rgba(21, 58, 120, .7), transparent 70%);
-    animation: auroraShift 22s ease-in-out infinite alternate;
-    pointer-events: none;
-}
-
-@keyframes auroraShift {
-    0%   { transform: translate3d(0, 0, 0) scale(1) rotate(0deg); }
-    50%  { transform: translate3d(3%, -2%, 0) scale(1.06) rotate(2deg); }
-    100% { transform: translate3d(-3%, 2%, 0) scale(1.04) rotate(-2deg); }
-}
-
-/* particle constellation canvas */
-.hero-particles {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    opacity: .75;
-}
+/* Animated glow/aurora/particle styles moved to css/site-bg.css */
 
 .tech-hero .hero-title {
     font-size: clamp(1.9rem, 1.2rem + 2.4vw, 2.9rem);

@@ -13,12 +13,22 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 
-    <link href="{% static 'css/auth.css' %}?v=20261013" rel="stylesheet">
+    <link href="{% static 'css/site-bg.css' %}?v=20261015a" rel="stylesheet">
+    <link href="{% static 'css/auth.css' %}?v=20261015b" rel="stylesheet">
 </head>
 <body class="auth-body">
 
+    <!-- Same animated background as the public site (particles + aurora + glows) -->
+    <div class="site-bg" aria-hidden="true">
+        <span class="hero-aurora"></span>
+        <canvas class="hero-particles" id="heroParticles"></canvas>
+        <span class="hero-glow hero-glow-1"></span>
+        <span class="hero-glow hero-glow-2"></span>
+    </div>
+
     {% block content %}{% endblock %}
 
+    <script src="{% static 'js/site-bg.js' %}?v=20261015a"></script>
     <script src="{% static 'js/auth.js' %}"></script>
 </body>
 </html>

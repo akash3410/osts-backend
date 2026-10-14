@@ -1,37 +1,36 @@
-<div class="container-xxl py-5">
+<div class="container-xxl py-5 float-panel">
     <div class="container py-5">
-        <div class="row g-5">
-            <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.1s">
-                <h6 class="text-secondary text-uppercase mb-3">Some Facts</h6>
-                <h1 class="mb-5">{{ site_config.fact_title }}</h1>
-                <p class="mb-5">{{ site_config.fact_description }}</p>
-                <div class="d-flex align-items-center">
-                    <i class="fa fa-headphones fa-2x flex-shrink-0 bg-primary p-3 text-white"></i>
-                    <div class="ps-4">
-                        <h6>Call for any query!</h6>
-                        <h3 class="text-primary m-0">{{ site_config.site_phone.as_national }}</h3>
+        <div class="row g-5 align-items-center">
+            <div class="col-lg-5 wow fadeInUp" data-wow-delay="0.1s">
+                <span class="eyebrow"><i class="bi bi-graph-up-arrow"></i> Some Facts</span>
+                <h2 class="section-title">{{ site_config.fact_title }}</h2>
+                <p class="section-sub mb-4">{{ site_config.fact_description }}</p>
+                <div class="d-flex align-items-center mt-4">
+                    <i class="bi bi-telephone-fill me-3" style="font-size: 1.3rem; color: var(--primary);"></i>
+                    <div>
+                        <p class="m-0 text-secondary" style="font-size: .85rem;">Call for any query!</p>
+                        <h5 class="m-0" style="color: #FFFFFF;">{{ site_config.site_phone.as_national }}</h5>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-6">
-                <div class="row g-4 align-items-center">
-                    <div class="col-sm-6">
-                        <div class="bg-primary p-4 mb-4 wow fadeIn" data-wow-delay="0.3s">
-                            <i class="fa fa-users fa-2x text-white mb-3"></i>
-                            <h2 class="text-white mb-2" data-toggle="counter-up">1234</h2>
-                            <p class="text-white mb-0">Happy Clients</p>
+            <div class="col-lg-7">
+                <div class="card-tech overflow-hidden wow fadeIn" data-wow-delay="0.2s">
+                    <div class="row g-0">
+                        <div class="col-6 p-4 p-sm-5" style="border-right: 1px solid rgba(255,255,255,.14); border-bottom: 1px solid rgba(255,255,255,.14);">
+                            <h2 class="mb-1" style="color: #FFFFFF; letter-spacing: -.03em;" data-toggle="counter-up">1234</h2>
+                            <p class="mb-0 text-secondary" style="font-size: .88rem;">Happy Clients</p>
                         </div>
-                        <div class="bg-secondary p-4 wow fadeIn" data-wow-delay="0.5s">
-                            <i class="fa fa-ship fa-2x text-white mb-3"></i>
-                            <h2 class="text-white mb-2" data-toggle="counter-up">1234</h2>
-                            <p class="text-white mb-0">Complete Shipments</p>
+                        <div class="col-6 p-4 p-sm-5" style="border-bottom: 1px solid rgba(255,255,255,.14);">
+                            <h2 class="mb-1" style="color: #FFFFFF; letter-spacing: -.03em;" data-toggle="counter-up">1234</h2>
+                            <p class="mb-0 text-secondary" style="font-size: .88rem;">Projects Shipped</p>
                         </div>
-                    </div>
-                    <div class="col-sm-6">
-                        <div class="bg-success p-4 wow fadeIn" data-wow-delay="0.7s">
-                            <i class="fa fa-star fa-2x text-white mb-3"></i>
-                            <h2 class="text-white mb-2" data-toggle="counter-up">1234</h2>
-                            <p class="text-white mb-0">Customer Reviews</p>
+                        <div class="col-6 p-4 p-sm-5" style="border-right: 1px solid rgba(255,255,255,.14);">
+                            <h2 class="mb-1" style="color: #FFFFFF; letter-spacing: -.03em;" data-toggle="counter-up">1234</h2>
+                            <p class="mb-0 text-secondary" style="font-size: .88rem;">Customer Reviews</p>
+                        </div>
+                        <div class="col-6 p-4 p-sm-5" style="background: var(--navy);">
+                            <h2 class="mb-1 text-white" style="letter-spacing: -.03em;">24/7</h2>
+                            <p class="mb-0" style="font-size: .88rem; color: rgba(255,255,255,.65);">Expert Support</p>
                         </div>
                     </div>
                 </div>

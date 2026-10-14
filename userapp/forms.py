@@ -7,32 +7,32 @@ from phonenumber_field.formfields import PhoneNumberField
 class RegisterForm(UserCreationForm):
     username = forms.CharField(
         label="Username",
-        widget=forms.TextInput(attrs={'placeholder': "Enter your username", 'class': "form-control"})
+        widget=forms.TextInput(attrs={'placeholder': "Enter your username", 'class': "form-control auth-input", 'autocomplete': "username"})
     )
     first_name = forms.CharField(
         label="First Name",
-        widget=forms.TextInput(attrs={'placeholder': "First Name", 'class': 'form-control'})
+        widget=forms.TextInput(attrs={'placeholder': "First Name", 'class': 'form-control auth-input'})
     )
     last_name = forms.CharField(
         label="Last Name",
-        widget=forms.TextInput(attrs={'placeholder': "Last Name", 'class': 'form-control'})
+        widget=forms.TextInput(attrs={'placeholder': "Last Name", 'class': 'form-control auth-input'})
     )
     email = forms.CharField(
         label="Email",
-        widget=forms.EmailInput(attrs={'placeholder': "Enter a valid email", 'class': "form-control"})
+        widget=forms.EmailInput(attrs={'placeholder': "Enter Your Email", 'class': "form-control auth-input", 'autocomplete': "email"})
     )
     password1 = forms.CharField(
         label="Password",
-        widget=forms.PasswordInput(attrs={'placeholder': "Enter your password", 'class': "form-control"})
+        widget=forms.PasswordInput(attrs={'placeholder': "Password", 'class': "form-control auth-input", 'autocomplete': "new-password"})
     )
     password2 = forms.CharField(
         label="Confirm Password",
-        widget=forms.PasswordInput(attrs={'placeholder': "Confirm your password", 'class': "form-control"})
+        widget=forms.PasswordInput(attrs={'placeholder': "Confirm Password", 'class': "form-control auth-input", 'autocomplete': "new-password"})
     )
     is_staff = forms.BooleanField(
         required=False,
         label="IS Staff ?",
-        widget=forms.CheckboxInput(attrs={'class': "form-check-input"})
+        widget=forms.CheckboxInput(attrs={'class': "form-check-input auth-check-input"})
     )
 
     class Meta:
@@ -43,12 +43,12 @@ class RegisterForm(UserCreationForm):
 class LoginForm(AuthenticationForm):
     username = forms.CharField(
         label="Username",
-        widget=forms.TextInput(attrs={'placeholder': "Enter your username", 'class': "form-control"})
+        widget=forms.TextInput(attrs={'placeholder': "Enter your username", 'class': "form-control auth-input", 'autocomplete': "username"})
     )
 
     password = forms.CharField(
         label="Password",
-        widget=forms.PasswordInput(attrs={'placeholder': "Enter your password", 'class': "form-control"})
+        widget=forms.PasswordInput(attrs={'placeholder': "Password", 'class': "form-control auth-input", 'autocomplete': "current-password"})
     )
 
 class UserInfoForm(forms.ModelForm):

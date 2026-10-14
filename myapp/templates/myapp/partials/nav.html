@@ -1,69 +1,98 @@
 {% load static %}
-<!-- Navbar Start -->
-<nav class="navbar navbar-styling navbar-expand-lg navbar-dark bg-transparent position-absolute shadow" id="navigation">
+<!-- Navbar Start — floating glass pill with dock-style icon selection -->
+<nav class="navbar navbar-styling navbar-expand-lg navbar-dark bg-transparent" id="navigation">
     <div class="container-fluid">
-        <!-- Offcanvas Toggle Button -->
-        <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar">
+
+        <!-- Offcanvas Toggle Button (mobile) -->
+        <button class="navbar-toggler nav-toggler-glass" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-label="Open menu">
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <a href="index.html" class="navbar-brand">
-            <img src="{% static 'img/logowhite.png' %}" alt="" height="50">
+        <a href="{% url 'homepage' %}" class="navbar-brand nav-brand">
+            <img src="{% static 'img/logowhite.png' %}" alt="OSTS" height="42">
         </a>
 
-        <!-- Offcanvas Sidebar -->
-        <div class="offcanvas offcanvas-start w-50" id="offcanvasNavbar">
-            <div class="offcanvas-header">
+        <!-- Offcanvas Sidebar (mobile) / static menu container (desktop) -->
+        <div class="offcanvas offcanvas-start nav-offcanvas" id="offcanvasNavbar" tabindex="-1">
+            <div class="offcanvas-header d-lg-none">
                 <h5 class="offcanvas-title">Menu</h5>
-                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
             <div class="offcanvas-body">
-                <ul class="navbar-nav ms-auto">
+                <ul class="navbar-nav nav-dock ms-auto">
                     <li class="nav-item">
-                        <a href="{% url 'homepage' %}" class="nav-link {% if request.path == '/' %}active{% endif %}">Home</a>
+                        <a href="{% url 'homepage' %}" class="nav-link dock-link {% if request.path == '/' %}active{% endif %}">
+                            <span class="dock-ico"><i class="bi bi-house-door-fill"></i></span>
+                            <span class="dock-label">Home</span>
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{% url 'aboutpage' %}" class="nav-link {% if request.path == '/about/' %}active{% endif %}">About</a>
+                        <a href="{% url 'aboutpage' %}" class="nav-link dock-link {% if request.path == '/about/' %}active{% endif %}">
+                            <span class="dock-ico"><i class="bi bi-buildings"></i></span>
+                            <span class="dock-label">About</span>
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{% url 'servicepage' %}" class="nav-link">Services</a>
+                        <a href="{% url 'servicepage' %}" class="nav-link dock-link {% if request.path == '/services/' %}active{% endif %}">
+                            <span class="dock-ico"><i class="bi bi-diagram-3-fill"></i></span>
+                            <span class="dock-label">Services</span>
+                        </a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
-                        <ul class="dropdown-menu">
-                            <li><a href="price.html" class="dropdown-item">Pricing Plan</a></li>
-                            <li><a href="feature.html" class="dropdown-item">Features</a></li>
-                            <li><a href="quote.html" class="dropdown-item">Free Quote</a></li>
-                            <li><a href="team.html" class="dropdown-item">Our Team</a></li>
-                            <li><a href="testimonial.html" class="dropdown-item">Testimonial</a></li>
-                            <li><a href="404.html" class="dropdown-item">404 Page</a></li>
+                        <a href="#" class="nav-link dock-link">
+                            <span class="dock-ico"><i class="bi bi-grid-fill"></i></span>
+                            <span class="dock-label">Pages <i class="bi bi-chevron-down dock-caret"></i></span>
+                        </a>
+                        <ul class="dropdown-menu dock-menu">
+                            <li><a class="dropdown-item" href="price.html"><i class="bi bi-tag"></i> Pricing Plan</a></li>
+                            <li><a class="dropdown-item" href="feature.html"><i class="bi bi-stars"></i> Features</a></li>
+                            <li><a class="dropdown-item" href="quote.html"><i class="bi bi-chat-quote"></i> Free Quote</a></li>
+                            <li><a class="dropdown-item" href="team.html"><i class="bi bi-people"></i> Our Team</a></li>
+                            <li><a class="dropdown-item" href="testimonial.html"><i class="bi bi-chat-square-quote"></i> Testimonial</a></li>
+                            <li><a class="dropdown-item" href="404.html"><i class="bi bi-exclamation-triangle"></i> 404 Page</a></li>
                         </ul>
                     </li>
                     <li class="nav-item">
-                        <a href="{% url 'contactepage' %}" class="nav-link">Contact</a>
+                        <a href="{% url 'contactepage' %}" class="nav-link dock-link {% if request.path == '/contacts/' %}active{% endif %}">
+                            <span class="dock-ico"><i class="bi bi-envelope-fill"></i></span>
+                            <span class="dock-label">Contact</span>
+                        </a>
                     </li>
 
-                    
                     {% if user.is_staff %}
-                        <li class="nav-item">
-                            <a href="{% url 'dashboard' %}" class="nav-link">Dashboard</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{% url 'logout' %}" class="nav-link">Logout</a>
-                        </li>
-                        {% if user.is_superuser %}
-                            <li class="nav-item">
-                                <a href="{% url 'register' %}" class="nav-link">Create an User</a>
-                            </li>
-                        {% endif %}
+                    <li class="nav-item">
+                        <a href="{% url 'dashboard' %}" class="nav-link dock-link">
+                            <span class="dock-ico"><i class="bi bi-speedometer2"></i></span>
+                            <span class="dock-label">Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'logout' %}" class="nav-link dock-link">
+                            <span class="dock-ico"><i class="bi bi-box-arrow-right"></i></span>
+                            <span class="dock-label">Logout</span>
+                        </a>
+                    </li>
+                    {% if user.is_superuser %}
+                    <li class="nav-item">
+                        <a href="{% url 'register' %}" class="nav-link dock-link">
+                            <span class="dock-ico"><i class="bi bi-person-plus-fill"></i></span>
+                            <span class="dock-label">Create User</span>
+                        </a>
+                    </li>
+                    {% endif %}
                     {% else %}
-                        <li class="nav-item">
-                            <a href="{% url 'login' %}" class="nav-link">Login</a>
-                        </li>
+                    <li class="nav-item">
+                        <a href="{% url 'login' %}" class="nav-link dock-link">
+                            <span class="dock-ico"><i class="bi bi-person-fill"></i></span>
+                            <span class="dock-label">Login</span>
+                        </a>
+                    </li>
                     {% endif %}
                 </ul>
             </div>
         </div>
+
+        <a href="{% url 'contactepage' %}" class="nav-cta d-none d-lg-inline-flex">Get a Quote <i class="bi bi-arrow-right"></i></a>
     </div>
 </nav>
 <!-- Navbar End -->

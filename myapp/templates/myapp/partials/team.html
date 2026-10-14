@@ -1,17 +1,53 @@
-<div class="container-xxl py-5">
+{% load static %}
+<div class="container-xxl py-5 float-panel">
     <div class="container py-5">
-        <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-            <h6 class="text-secondary text-uppercase">Our Team</h6>
-            <h1 class="mb-5">Expert Team Members</h1>
+        <div class="text-center mx-auto wow fadeInUp" data-wow-delay="0.1s" style="max-width: 640px;">
+            <span class="eyebrow"><i class="bi bi-people-fill"></i> Our Team</span>
+            <h2 class="section-title">Expert Team Members</h2>
+            <p class="section-sub">The engineers, designers and strategists behind every OSTS project.</p>
         </div>
-        <div class="row g-4">
-            <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
-                <div class="team-item p-4">
-                    <div class="overflow-hidden mb-4">
-                        <img class="img-fluid" src="img/team-1.jpg" alt="">
+        <div class="row g-4 mt-2">
+            <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.2s">
+                <div class="team-item p-4 text-center h-100">
+                    <div class="overflow-hidden rounded-circle mb-4 mx-auto" style="width: 130px; height: 130px;">
+                        <img class="img-fluid w-100 h-100" style="object-fit: cover;" src="{% static 'img/team-1.jpg' %}" alt="Team member">
                     </div>
-                    <h5 class="mb-0">Full Name</h5>
-                    <p>Designation</p>
+                    <h5 class="mb-1">Full Name</h5>
+                    <p class="text-secondary mb-2" style="font-size: .92rem;">Designation</p>
+                    <div class="btn-slide mt-1">
+                        <i class="fa fa-share"></i>
+                        <span>
+                            <a href=""><i class="fab fa-facebook-f"></i></a>
+                            <a href=""><i class="fab fa-twitter"></i></a>
+                            <a href=""><i class="fab fa-instagram"></i></a>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
+                <div class="team-item p-4 text-center h-100">
+                    <div class="overflow-hidden rounded-circle mb-4 mx-auto" style="width: 130px; height: 130px;">
+                        <img class="img-fluid w-100 h-100" style="object-fit: cover;" src="{% static 'img/team-2.jpg' %}" alt="Team member">
+                    </div>
+                    <h5 class="mb-1">Full Name</h5>
+                    <p class="text-secondary mb-2" style="font-size: .92rem;">Designation</p>
+                    <div class="btn-slide mt-1">
+                        <i class="fa fa-share"></i>
+                        <span>
+                            <a href=""><i class="fab fa-facebook-f"></i></a>
+                            <a href=""><i class="fab fa-twitter"></i></a>
+                            <a href=""><i class="fab fa-instagram"></i></a>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.4s">
+                <div class="team-item p-4 text-center h-100">
+                    <div class="overflow-hidden rounded-circle mb-4 mx-auto" style="width: 130px; height: 130px;">
+                        <img class="img-fluid w-100 h-100" style="object-fit: cover;" src="{% static 'img/team-3.jpg' %}" alt="Team member">
+                    </div>
+                    <h5 class="mb-1">Full Name</h5>
+                    <p class="text-secondary mb-2" style="font-size: .92rem;">Designation</p>
                     <div class="btn-slide mt-1">
                         <i class="fa fa-share"></i>
                         <span>
@@ -23,46 +59,12 @@
                 </div>
             </div>
             <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
-                <div class="team-item p-4">
-                    <div class="overflow-hidden mb-4">
-                        <img class="img-fluid" src="img/team-2.jpg" alt="">
+                <div class="team-item p-4 text-center h-100">
+                    <div class="overflow-hidden rounded-circle mb-4 mx-auto" style="width: 130px; height: 130px;">
+                        <img class="img-fluid w-100 h-100" style="object-fit: cover;" src="{% static 'img/team-4.jpg' %}" alt="Team member">
                     </div>
-                    <h5 class="mb-0">Full Name</h5>
-                    <p>Designation</p>
-                    <div class="btn-slide mt-1">
-                        <i class="fa fa-share"></i>
-                        <span>
-                            <a href=""><i class="fab fa-facebook-f"></i></a>
-                            <a href=""><i class="fab fa-twitter"></i></a>
-                            <a href=""><i class="fab fa-instagram"></i></a>
-                        </span>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.7s">
-                <div class="team-item p-4">
-                    <div class="overflow-hidden mb-4">
-                        <img class="img-fluid" src="img/team-3.jpg" alt="">
-                    </div>
-                    <h5 class="mb-0">Full Name</h5>
-                    <p>Designation</p>
-                    <div class="btn-slide mt-1">
-                        <i class="fa fa-share"></i>
-                        <span>
-                            <a href=""><i class="fab fa-facebook-f"></i></a>
-                            <a href=""><i class="fab fa-twitter"></i></a>
-                            <a href=""><i class="fab fa-instagram"></i></a>
-                        </span>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.9s">
-                <div class="team-item p-4">
-                    <div class="overflow-hidden mb-4">
-                        <img class="img-fluid" src="img/team-4.jpg" alt="">
-                    </div>
-                    <h5 class="mb-0">Full Name</h5>
-                    <p>Designation</p>
+                    <h5 class="mb-1">Full Name</h5>
+                    <p class="text-secondary mb-2" style="font-size: .92rem;">Designation</p>
                     <div class="btn-slide mt-1">
                         <i class="fa fa-share"></i>
                         <span>

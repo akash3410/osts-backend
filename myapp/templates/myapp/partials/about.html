@@ -1,28 +1,64 @@
-<div class="container-fluid overflow-hidden py-5 px-lg-0">
-    <div class="container about py-5 px-lg-0">
-        <div class="row g-5 mx-lg-0">
-            <div class="col-lg-6 ps-lg-0 wow fadeInLeft" data-wow-delay="0.1s" style="min-height: 400px;">
-                <div class="position-relative h-100">
-                    <img class="position-absolute img-fluid w-100 h-100" src="{{ site_config.about_image.url }}" style="object-fit: cover;" alt="">
+{% load static %}
+<div class="container-fluid overflow-hidden section-tint py-5 px-lg-0 float-panel">
+    <div class="container about px-lg-0">
+        <div class="row g-5 mx-lg-0 align-items-center">
+
+            <!-- Clean rounded image -->
+            <div class="col-lg-6 ps-lg-0 wow fadeInLeft" data-wow-delay="0.1s">
+                <div class="position-relative" style="min-height: 460px;">
+                    <img class="position-absolute img-fluid w-100 h-100 parallax-img" data-parallax="0.05"
+                         src="{{ site_config.about_image.url }}"
+                         style="object-fit: cover; border-radius: 20px; border: 1px solid rgba(255,255,255,.18); box-shadow: 0 20px 45px rgba(2, 10, 30, .35);"
+                         alt="About OSTS">
                 </div>
             </div>
-            <div class="col-lg-6 about-text wow fadeInUp" data-wow-delay="0.3s">
-                <h6 class="text-secondary text-uppercase mb-3">About Us</h6>
-                <h1 class="mb-5">{{ site_config.about_title }}</h1>
-                <p class="mb-5">{{ site_config.about_description }}</p>
-                <div class="row g-4 mb-5">
-                    <div class="col-sm-6 wow fadeIn" data-wow-delay="0.5s">
-                        <i class="fa fa-globe fa-3x text-primary mb-3"></i>
-                        <h5>Global Coverage</h5>
-                        <p class="m-0">Stet stet justo dolor sed duo. Ut clita sea sit ipsum diam lorem diam justo.</p>
+
+            <!-- Copy + stats + CTA -->
+            <div class="col-lg-6 about-text wow fadeInUp" data-wow-delay="0.2s">
+                <span class="eyebrow"><i class="bi bi-buildings"></i> About Us</span>
+                <h2 class="section-title">{{ site_config.about_title }}</h2>
+                <p class="section-sub">{{ site_config.about_description }}</p>
+
+                <div class="stat-row stat-dark" style="margin: 34px 0; padding: 26px 0; border-top: 1px solid rgba(255,255,255,.14); border-bottom: 1px solid rgba(255,255,255,.14);">
+                    <div class="stat-item">
+                        <div class="stat-num">10+ Years</div>
+                        <div class="stat-label">Industry Experience</div>
                     </div>
-                    <div class="col-sm-6 wow fadeIn" data-wow-delay="0.7s">
-                        <i class="fa fa-shipping-fast fa-3x text-primary mb-3"></i>
-                        <h5>On Time Delivery</h5>
-                        <p class="m-0">Stet stet justo dolor sed duo. Ut clita sea sit ipsum diam lorem diam justo.</p>
+                    <div class="stat-item">
+                        <div class="stat-num">150+</div>
+                        <div class="stat-label">Projects Delivered</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-num">24/7</div>
+                        <div class="stat-label">Expert Support</div>
                     </div>
                 </div>
-                <a href="" class="btn btn-primary py-3 px-5">Explore More</a>
+
+                <a href="{% url 'servicepage' %}" class="btn-tech">Explore More <i class="bi bi-arrow-right"></i></a>
+            </div>
+        </div>
+
+        <!-- Airy icon columns -->
+        <div class="row g-4 g-lg-5 mt-2 mt-lg-4 pt-lg-3">
+            <div class="col-6 col-lg-3 wow fadeInUp" data-wow-delay="0.1s">
+                <i class="bi bi-code-slash d-block mb-3" style="font-size: 1.7rem; color: var(--primary-light);"></i>
+                <h6 class="mb-2">Web Development</h6>
+                <p class="m-0 text-secondary" style="font-size: .9rem;">High-performance websites and web apps built to scale.</p>
+            </div>
+            <div class="col-6 col-lg-3 wow fadeInUp" data-wow-delay="0.2s">
+                <i class="bi bi-cloud-arrow-up d-block mb-3" style="font-size: 1.7rem; color: var(--primary-light);"></i>
+                <h6 class="mb-2">Cloud &amp; DevOps</h6>
+                <p class="m-0 text-secondary" style="font-size: .9rem;">CI/CD, containers and cloud infrastructure that stays online.</p>
+            </div>
+            <div class="col-6 col-lg-3 wow fadeInUp" data-wow-delay="0.3s">
+                <i class="bi bi-palette d-block mb-3" style="font-size: 1.7rem; color: var(--primary-light);"></i>
+                <h6 class="mb-2">UI/UX Design</h6>
+                <p class="m-0 text-secondary" style="font-size: .9rem;">Clean, conversion-focused interfaces your users love.</p>
+            </div>
+            <div class="col-6 col-lg-3 wow fadeInUp" data-wow-delay="0.4s">
+                <i class="bi bi-headset d-block mb-3" style="font-size: 1.7rem; color: var(--primary-light);"></i>
+                <h6 class="mb-2">IT Support</h6>
+                <p class="m-0 text-secondary" style="font-size: .9rem;">Proactive monitoring and 24/7 helpdesk for peace of mind.</p>
             </div>
         </div>
     </div>

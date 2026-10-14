@@ -1,0 +1,169 @@
+{% extends 'userapp/auth_base.html' %}
+{% load static %}
+
+{% block title %}Create An Account | Log In{% endblock %}
+
+{% block content %}
+<div class="auth-shell">
+
+    {# ---- Toggle ---- #}
+    <div class="auth-toggle" role="tablist" aria-label="Sign up or Log in">
+        <button type="button"
+                class="auth-toggle-btn{% if active_tab != 'login' %} is-active{% endif %}"
+                data-tab="signup" role="tab"
+                aria-selected="{% if active_tab != 'login' %}true{% else %}false{% endif %}"
+                aria-controls="panel-signup">Sign Up</button>
+        <button type="button"
+                class="auth-toggle-btn{% if active_tab == 'login' %} is-active{% endif %}"
+                data-tab="login" role="tab"
+                aria-selected="{% if active_tab == 'login' %}true{% else %}false{% endif %}"
+                aria-controls="panel-login">Log In</button>
+    </div>
+
+    {# ---- Messages ---- #}
+    {% if messages %}
+        <div class="auth-messages">
+            {% for message in messages %}
+                <div class="auth-message auth-message--{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {# ================= SIGN UP PANEL ================= #}
+    <section id="panel-signup" class="auth-panel{% if active_tab != 'login' %} is-active{% endif %}" role="tabpanel">
+        <h1 class="auth-title">Create An Account</h1>
+
+        <form method="post" novalidate class="auth-form">
+            {% csrf_token %}
+            <input type="hidden" name="form_type" value="signup">
+
+            {% if signup_form.non_field_errors %}
+                <div class="auth-form-errors">
+                    {% for error in signup_form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="auth-row-2">
+                <div class="auth-field{% if signup_form.first_name.errors %} has-error{% endif %}">
+                    <span class="auth-icon"><i class="bi bi-person"></i></span>
+                    {{ signup_form.first_name }}
+                </div>
+                <div class="auth-field{% if signup_form.last_name.errors %} has-error{% endif %}">
+                    <span class="auth-icon"><i class="bi bi-person"></i></span>
+                    {{ signup_form.last_name }}
+                </div>
+            </div>
+            {% if signup_form.first_name.errors or signup_form.last_name.errors %}
+                <div class="auth-field-errors">
+                    {% for error in signup_form.first_name.errors %}<p>{{ error }}</p>{% endfor %}
+                    {% for error in signup_form.last_name.errors %}<p>{{ error }}</p>{% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="auth-field{% if signup_form.username.errors %} has-error{% endif %}">
+                <span class="auth-icon"><i class="bi bi-at"></i></span>
+                {{ signup_form.username }}
+            </div>
+            {% if signup_form.username.errors %}
+                <div class="auth-field-errors">
+                    {% for error in signup_form.username.errors %}<p>{{ error }}</p>{% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="auth-field{% if signup_form.email.errors %} has-error{% endif %}">
+                <span class="auth-icon"><i class="bi bi-envelope"></i></span>
+                {{ signup_form.email }}
+            </div>
+            {% if signup_form.email.errors %}
+                <div class="auth-field-errors">
+                    {% for error in signup_form.email.errors %}<p>{{ error }}</p>{% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="auth-field{% if signup_form.password1.errors %} has-error{% endif %}">
+                <span class="auth-icon"><i class="bi bi-lock"></i></span>
+                {{ signup_form.password1 }}
+                <button type="button" class="auth-eye" data-toggle-password aria-label="Show password">
+                    <i class="bi bi-eye-slash"></i>
+                </button>
+            </div>
+            {% if signup_form.password1.errors %}
+                <div class="auth-field-errors">
+                    {% for error in signup_form.password1.errors %}<p>{{ error }}</p>{% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="auth-field{% if signup_form.password2.errors %} has-error{% endif %}">
+                <span class="auth-icon"><i class="bi bi-shield-lock"></i></span>
+                {{ signup_form.password2 }}
+                <button type="button" class="auth-eye" data-toggle-password aria-label="Show password">
+                    <i class="bi bi-eye-slash"></i>
+                </button>
+            </div>
+            {% if signup_form.password2.errors %}
+                <div class="auth-field-errors">
+                    {% for error in signup_form.password2.errors %}<p>{{ error }}</p>{% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="auth-check">
+                {{ signup_form.is_staff }}
+                <label for="{{ signup_form.is_staff.id_for_label }}">{{ signup_form.is_staff.label }}</label>
+            </div>
+
+            <button type="submit" class="auth-submit">Create an Account</button>
+        </form>
+
+        {% include 'userapp/auth_social_partial.html' %}
+    </section>
+
+    {# ================= LOG IN PANEL ================= #}
+    <section id="panel-login" class="auth-panel{% if active_tab == 'login' %} is-active{% endif %}" role="tabpanel">
+        <h1 class="auth-title">Welcome Back</h1>
+
+        <form method="post" novalidate class="auth-form">
+            {% csrf_token %}
+            <input type="hidden" name="form_type" value="login">
+
+            {% if login_form.non_field_errors %}
+                <div class="auth-form-errors">
+                    {% for error in login_form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="auth-field{% if login_form.username.errors %} has-error{% endif %}">
+                <span class="auth-icon"><i class="bi bi-person"></i></span>
+                {{ login_form.username }}
+            </div>
+            {% if login_form.username.errors %}
+                <div class="auth-field-errors">
+                    {% for error in login_form.username.errors %}<p>{{ error }}</p>{% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="auth-field{% if login_form.password.errors %} has-error{% endif %}">
+                <span class="auth-icon"><i class="bi bi-lock"></i></span>
+                {{ login_form.password }}
+                <button type="button" class="auth-eye" data-toggle-password aria-label="Show password">
+                    <i class="bi bi-eye-slash"></i>
+                </button>
+            </div>
+            {% if login_form.password.errors %}
+                <div class="auth-field-errors">
+                    {% for error in login_form.password.errors %}<p>{{ error }}</p>{% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="auth-links">
+                <a href="#">Forget password?</a>
+                <a href="{% url 'homepage' %}">Back to home…</a>
+            </div>
+
+            <button type="submit" class="auth-submit">Log In</button>
+        </form>
+
+        {% include 'userapp/auth_social_partial.html' %}
+    </section>
+
+</div>
+{% endblock %}

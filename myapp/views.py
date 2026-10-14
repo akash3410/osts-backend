@@ -28,7 +28,16 @@ def about_view(request):
     return render(request, 'myapp/about.html')
 
 def service_view(request):
-    return render(request, 'myapp/service.html')
+    services = Service.objects.filter(is_active=True)
+    return render(request, 'myapp/service.html', {'services': services})
 
 def contact_view(request):
-    return render(request, 'myapp/contact.html')
+    if request.method == "POST":
+        form = MessageForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f"Message Sent!")
+            return redirect(request.path + "#send-message")
+    else:
+        form = MessageForm()
+    return render(request, 'myapp/contact.html', {'form': form})

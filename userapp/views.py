@@ -12,34 +12,55 @@ def supperuser_required(user):
 def superuser_or_staffuser_required(user):
     return user.is_superuser or user.is_staff
 
-@user_passes_test(supperuser_required)
-def register_view(request):
-    if request.method == "POST":
-        form = RegisterForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('login')
-    else:
-        form = RegisterForm()
-    return render(request, "userapp/registerForm.html", {'form': form})
 
-def login_view(request):
+def auth_page(request):
+    """Combined Sign Up / Log In page with a tab toggle."""
     if request.user.is_authenticated:
         return redirect('dashboard')
-    
-    if request.method == "POST":
-        form = LoginForm(request, data = request.POST)
-        if form.is_valid():
-            user = form.get_user()
-            if user.is_staff:
-                login(request, user)
-                return redirect("dashboard")
-            else:
+
+    active_tab = request.GET.get('tab', 'signup')
+    if active_tab not in ('signup', 'login'):
+        active_tab = 'signup'
+
+    login_form = LoginForm()
+    signup_form = RegisterForm()
+
+    if request.method == 'POST':
+        if request.POST.get('form_type') == 'login':
+            active_tab = 'login'
+            login_form = LoginForm(request, data=request.POST)
+            if login_form.is_valid():
+                user = login_form.get_user()
+                if user.is_staff:
+                    login(request, user)
+                    return redirect('dashboard')
                 messages.error(request, "Access denied!")
-                return redirect('login')
-    else:
-        form = LoginForm()
-    return render(request, "userapp/loginForm.html", {'form': form})
+                return redirect('/user/auth/?tab=login')
+        else:
+            active_tab = 'signup'
+            signup_form = RegisterForm(request.POST)
+            if signup_form.is_valid():
+                signup_form.save()
+                messages.success(
+                    request,
+                    "Account created successfully! You can now log in.",
+                )
+                active_tab = 'login'
+
+    return render(request, 'userapp/auth.html', {
+        'login_form': login_form,
+        'signup_form': signup_form,
+        'active_tab': active_tab,
+    })
+
+
+def register_view(request):
+    """Legacy URL — signup now lives on the combined auth page."""
+    return redirect('/user/auth/?tab=signup')
+
+def login_view(request):
+    """Legacy URL — login now lives on the combined auth page."""
+    return redirect('/user/auth/?tab=login')
 
 @login_required
 def logout_view(request):

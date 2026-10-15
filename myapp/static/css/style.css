@@ -978,9 +978,10 @@ body {
     overflow: hidden;
     background: transparent;
     padding: 150px 0 0;
-    /* full-viewport hero on every device */
-    min-height: 100vh;
-    min-height: 100dvh;
+    /* full-viewport hero on every device, minus the sticky marquee strip
+       that now lives right below it (see .tech-marquee) */
+    min-height: calc(100vh - var(--marquee-h));
+    min-height: calc(100dvh - var(--marquee-h));
     display: flex;
     flex-direction: column;
 }
@@ -1155,14 +1156,24 @@ body {
 }
 
 /* ---------- Tech marquee strip (glossy glass) ---------- */
+:root {
+    /* Strip height. The hero reserves this space (calc in .tech-hero) so the
+       strip still sits exactly on the fold at load, then pins to the top. */
+    --marquee-h: 47px;
+}
+
 .tech-marquee {
-    position: relative;
+    /* Pins to the top of the viewport once scrolled up to it and stays there
+       for the rest of the page (containing block spans <body>). */
+    position: sticky;
+    top: 0;
+    z-index: 1000; /* above page sections, below the navbar dock (1060) */
+    height: var(--marquee-h);
     background: rgba(255, 255, 255, .07);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
     overflow: hidden;
     padding: 15px 0;
-    margin-top: auto;
     border-top: 1px solid rgba(255, 255, 255, .16);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, .28);
 }

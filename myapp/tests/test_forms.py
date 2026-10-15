@@ -6,7 +6,7 @@ Covers the honeypot anti-spam layer added in Phase 1.
 import pytest
 
 from myapp.forms import HONEYPOT_FIELD, MessageForm
-from myapp.models import Messages
+from myapp.models import Inquiry
 
 pytestmark = pytest.mark.django_db
 
@@ -40,17 +40,17 @@ class TestMessageFormHoneypot:
         assert HONEYPOT_FIELD in form.errors
 
     def test_filled_honeypot_does_not_create_a_row(self, service):
-        before = Messages.objects.count()
+        before = Inquiry.objects.count()
         form = MessageForm(
             data={**_base_payload(service), HONEYPOT_FIELD: "http://spam.example"}
         )
         if form.is_valid():
             form.save()
-        assert Messages.objects.count() == before
+        assert Inquiry.objects.count() == before
 
     def test_honeypot_field_is_not_a_model_field(self):
         # It must never be persisted — it isn't part of the model.
-        assert HONEYPOT_FIELD not in Messages._meta.fields
+        assert HONEYPOT_FIELD not in Inquiry._meta.fields
 
     def test_honeypot_renders_hidden_widget(self, service):
         form = MessageForm()

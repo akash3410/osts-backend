@@ -74,10 +74,10 @@ class TestMutationsArePostOnly:
 
     def test_response_toggle_requires_post(self, staff_client, message):
         url = reverse("responseupdate", args=[message.pk])
-        before = message.response
+        before = message.status
         staff_client.get(url)
         message.refresh_from_db()
-        assert message.response == before  # unchanged by GET
+        assert message.status == before  # unchanged by GET
 
     def test_logout_requires_post(self, staff_client, staff_user):
         resp = staff_client.get(reverse("logout"))

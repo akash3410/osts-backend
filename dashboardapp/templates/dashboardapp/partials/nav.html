@@ -81,7 +81,7 @@
                       <a href="{% url 'allmessage' %}#message-{{message.pk}}">
                         <div class="notif-content">
                           <span class="subject"> {{ message.name }} </span>
-                          <span style="color: #797171; font-size: 12px;">{{ message.service }}</span>
+                          <span style="color: #797171; font-size: 12px;">{{ message.service_title|default:"General" }}</span>
                           <span class="block">{{ message.note | truncatechars:20 }}</span>
                           <span class="time">{{ message.created_at | naturaltime }}</span>
                         </div>

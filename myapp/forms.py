@@ -1,5 +1,5 @@
 from django import forms
-from .models import Messages
+from .models import Inquiry
 from dashboardapp.models import Service
 from phonenumber_field.formfields import PhoneNumberField
 
@@ -62,7 +62,7 @@ class MessageForm(forms.ModelForm):
     )
 
     class Meta:
-        model = Messages
+        model = Inquiry
         fields = ['name', 'email', 'phone', 'service', 'note']
 
     def clean_website_url(self):

@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import user_passes_test
 from .forms import ServiceForm
 from .models import Service
-from myapp.models import Messages
+from myapp.models import Inquiry
 from django.contrib import messages
 
 # Create your views here.
@@ -71,24 +71,38 @@ def sites_info_view(request):
 
 @user_passes_test(superuser_or_staff_required)
 def all_message_view(request):
-    messages = Messages.objects.all().order_by("response")
+    # Open ones first (need attention), then newest. Uses the partial index.
+    inquiries = Inquiry.objects.order_by("status", "-created_at")
 
     context = {
-        "allmessage": messages
+        "allmessage": inquiries
     }
     return render(request, 'dashboardapp/messages.html', context)
 
 @user_passes_test(superuser_or_staff_required)
 def response_update_view(request, pk):
-    # State toggle: POST-only.
+    # Status transition: POST-only.
     if request.method != "POST":
         return redirect("allmessage")
-    message = get_object_or_404(Messages, pk=pk)
-    message.response = not message.response
-    # update_fields + save avoids touching unrelated columns (and the
-    # auto_now response_at stamp on unrelated rows).
-    message.save(update_fields=["response", "response_at"])
-    messages.success(request, f"{message.name}'s Response Updated!")
+    inquiry = get_object_or_404(Inquiry, pk=pk)
+
+    # Explicit target status wins; otherwise fall back to the old binary
+    # button behaviour (replied <-> new) so the existing UI still makes sense.
+    target = request.POST.get("status")
+    if target in Inquiry.Status.values:
+        inquiry.status = target
+    elif inquiry.status in Inquiry.RESPONDED_STATUSES:
+        inquiry.status = Inquiry.Status.NEW
+    else:
+        inquiry.status = Inquiry.Status.REPLIED
+
+    # Full save (not update_fields): our custom save() also maintains
+    # responded_at and the service_title snapshot, so those must persist too.
+    inquiry.save()
+    messages.success(
+        request,
+        f"{inquiry.name}'s inquiry set to {inquiry.get_status_display()}!",
+    )
     return redirect("allmessage")
 
 @user_passes_test(superuser_or_staff_required)
@@ -98,8 +112,8 @@ def message_delete_view(request, pk):
     # the URL. Both bugs are now closed and covered by tests.
     if request.method != "POST":
         return redirect("allmessage")
-    message = get_object_or_404(Messages, pk=pk)
-    name = message.name
-    message.delete()
+    inquiry = get_object_or_404(Inquiry, pk=pk)
+    name = inquiry.name
+    inquiry.delete()
     messages.success(request, f"{name}'s message Deleted!")
     return redirect('allmessage')

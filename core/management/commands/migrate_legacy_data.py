@@ -14,7 +14,7 @@ What it copies (idempotent — skips rows that already exist):
                                                existing logins keep working)
     userapp_userinfo     -> userapp.Profile
     dashboardapp_service -> dashboardapp.Service
-    myapp_messages       -> myapp.Messages
+    myapp_messages       -> myapp.Inquiry
     core_siteconfiguration -> core.SiteConfiguration
 
 Usage:
@@ -189,9 +189,22 @@ class Command(BaseCommand):
         return copied
 
     def _migrate_messages(self, conn, dry):
+        """Legacy `myapp_messages` -> Inquiry.
+
+        Phase 3 changed the shape, so the values are translated while copying:
+          * service (free text, e.g. "Web") -> service FK (matched by title)
+            plus a service_title snapshot. If no active Service matches the
+            text, the FK stays NULL but service_title preserves the original.
+          * response (bool)              -> status (new <-> replied)
+        """
         if not self._table_exists(conn, "myapp_messages"):
             return 0
-        from myapp.models import Messages
+        from myapp.models import Inquiry
+        from dashboardapp.models import Service
+
+        # Build a title -> Service map once (only active ones are selectable,
+        # but we match any so legacy text still links if the row exists).
+        by_title = {s.title: s for s in Service.objects.all()}
 
         rows = conn.execute(
             "SELECT name, email, phone, service, note, response, created_at"
@@ -199,25 +212,42 @@ class Command(BaseCommand):
         ).fetchall()
         copied = 0
         for r in rows:
-            # Messages has no natural unique key; dedupe on (name, email, created_at).
-            if Messages.objects.filter(
+            # No natural unique key; dedupe on (name, email, created_at).
+            if Inquiry.objects.filter(
                 name=r["name"], email=r["email"], created_at=r["created_at"]
             ).exists():
                 continue
+
+            service_text = (r["service"] or "").strip()
+            service_obj = by_title.get(service_text)
+            status = (
+                Inquiry.Status.REPLIED
+                if r["response"]
+                else Inquiry.Status.NEW
+            )
+
             if not dry:
-                obj = Messages(
+                obj = Inquiry(
                     name=r["name"],
                     email=r["email"] or "",
                     phone=r["phone"] or None,
-                    service=r["service"] or "",
+                    service=service_obj,
+                    service_title=service_text,
                     note=r["note"] or None,
-                    response=bool(r["response"]) if r["response"] is not None else None,
+                    status=status,
                 )
-                # Preserve the original timestamp (created_at is auto_now_add,
-                # so set it directly after construction).
-                obj.created_at = r["created_at"]
                 obj.save()
-                Messages.objects.filter(pk=obj.pk).update(created_at=r["created_at"])
+                # Preserve the original timestamp (created_at is auto_now_add,
+                # so force it back with an explicit UPDATE) and stamp
+                # responded_at for inquiries that were already answered.
+                Inquiry.objects.filter(pk=obj.pk).update(
+                    created_at=r["created_at"],
+                    **(
+                        {"responded_at": r["created_at"]}
+                        if status == Inquiry.Status.REPLIED
+                        else {}
+                    ),
+                )
             copied += 1
         return copied
 

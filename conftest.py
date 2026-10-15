@@ -135,16 +135,24 @@ def service(make_service):
 
 @pytest.fixture
 def make_message(db):
-    from myapp.models import Messages
+    from myapp.models import Inquiry
 
     def _make(name="Client", **overrides):
+        # `service` is now an FK (was free text). Default to a real Service
+        # unless the caller supplies one (or explicitly passes None).
+        if "service" not in overrides:
+            from dashboardapp.models import Service
+
+            overrides["service"] = (
+                Service.objects.filter(is_active=True).first()
+                or Service.objects.create(title="Web", description="A service")
+            )
         defaults = {
             "email": "client@example.com",
-            "service": "Web",
             "note": "Hello",
         }
         defaults.update(overrides)
-        return Messages.objects.create(name=name, **defaults)
+        return Inquiry.objects.create(name=name, **defaults)
 
     return _make
 

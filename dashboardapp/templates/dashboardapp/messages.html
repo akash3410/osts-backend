@@ -56,7 +56,7 @@
                                                 <div class="card">
                                                     <div class="card-body">
                                                         <h5 class="card-title">{{message.name}}</h5>
-                                                        <small class="mb-5 card-text">{{ message.service }}</small>
+                                                        <small class="mb-5 card-text">{{ message.service_title|default:message.service }}</small>
                                                         <p class="card-text">
                                                             <span class="fw-bolder ">Email: </span>
                                                             {{message.email}}
@@ -73,14 +73,14 @@
                                                             <span class="fw-bolder ">Note: </span>
                                                             {{message.note}}
                                                         </p>
-                                                        {% if message.response == True %}
-                                                            <p class="card-text fw-bolder">Status: <span class="text-success"> Responed </span> </p>
+                                                        {% if message.status == "replied" or message.status == "closed" %}
+                                                            <p class="card-text fw-bolder">Status: <span class="text-success"> {{ message.get_status_display }} </span> </p>
                                                             <p class="card-text">
                                                                 <span class="fw-bolder ">Response At: </span>
-                                                                {{message.response_at | naturaltime}}
+                                                                {{message.responded_at | naturaltime}}
                                                             </p>
                                                         {% else %}
-                                                            <p class="card-text fw-bolder">Status: <span class="text-danger"> Not Responed yet </span> </p>
+                                                            <p class="card-text fw-bolder">Status: <span class="text-danger"> {{ message.get_status_display }} </span> </p>
                                                         {% endif %}
                                                     </div>
                                                 </div>
@@ -92,7 +92,7 @@
                             <td>{{message.phone}}</td>
                             <td>{{message.email}}</td>
                             <td>
-                                {% if message.response == True %}
+                                {% if message.status == "replied" or message.status == "closed" %}
                                     <i class="fa-solid fa-check text-success fs-4 ms-3"></i>
                                 {% else %}
                                     <i class="fa-solid fa-xmark text-danger fs-4 ms-3"></i>

@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "dashboardapp",
     "core",
     "projects",
+    "billing",
     # Third party
     "phonenumber_field",
     "axes",

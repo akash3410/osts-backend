@@ -25,8 +25,8 @@
             <div class="col-4">
                 <div class="mb-3">
                     <div>
-                        {% if user.userinfo.profile_picture %}
-                            <img src="{{ user.userinfo.profile_picture.url }}" alt="Profile Picture" width="50%" height="50%">
+                        {% if user.profile.profile_picture %}
+                            <img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture" width="50%" height="50%">
                         {% else %}
                             <p>No profile picture uploaded.</p>
                         {% endif %}
@@ -37,8 +37,8 @@
                 </div>
                 <div class="mb-3">
                     <div>
-                        {% if user.userinfo.cover_photo %}
-                            <img src="{{ user.userinfo.cover_photo.url }}" alt="Cover Photo" width="50%" height="50%">
+                        {% if user.profile.cover_photo %}
+                            <img src="{{ user.profile.cover_photo.url }}" alt="Cover Photo" width="50%" height="50%">
                         {% else %}
                             <p>No cover uploaded.</p>
                         {% endif %}

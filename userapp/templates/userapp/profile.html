@@ -7,9 +7,9 @@
 
 <div class="container">
     <div class="m-4">
-        <img src="{{ user.userinfo.cover_photo.url }}" alt="" width="100%" height="300px">
+        <img src="{{ user.profile.cover_photo.url }}" alt="" width="100%" height="300px">
         <div class="d-flex align-items-center">
-            <img src="{{ user.userinfo.profile_picture.url }}" alt="" class="rounded-circle mt-2" width="15%" height="10%">
+            <img src="{{ user.profile.profile_picture.url }}" alt="" class="rounded-circle mt-2" width="15%" height="10%">
             <h2 class="ms-5">{{ user.first_name }} {{ user.last_name }}</h2>
         </div>
         <span class="d-block"></span>
@@ -26,11 +26,11 @@
                     {% endif %}
                 </p>
                 <p class="fs-6">Username: <strong class="fw-bold">{{user.username}}</strong></p>
-                <p class="fs-6">Lives in <strong class="fw-bold">{{user.userinfo.present_address}}</strong></p>
-                <p class="fs-6">From <strong class="fw-bold">{{user.userinfo.permanent_address}}</strong></p>
-                <p class="fs-6">Phone: <strong class="fw-bold">{{user.userinfo.phone}}</strong></p>
+                <p class="fs-6">Lives in <strong class="fw-bold">{{user.profile.present_address}}</strong></p>
+                <p class="fs-6">From <strong class="fw-bold">{{user.profile.permanent_address}}</strong></p>
+                <p class="fs-6">Phone: <strong class="fw-bold">{{user.profile.phone}}</strong></p>
                 <p class="fs-6">Email: <strong class="fw-bold">{{user.email}}</strong></p>
-                <p class="fs-6">Email: <strong class="fw-bold">{{user.userinfo.secondary_email}}</strong></p>
+                <p class="fs-6">Email: <strong class="fw-bold">{{user.profile.secondary_email}}</strong></p>
                 <a href="{% url 'EditUserInfo' %}" class="btn btn-outline-secondary w-100 text-dark">Edit User Info</a>
             </div>
         </div>

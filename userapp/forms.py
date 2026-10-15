@@ -1,8 +1,10 @@
 from django import forms
+from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
-from django.contrib.auth.models import User
-from .models import Userinfo
+from .models import Profile
 from phonenumber_field.formfields import PhoneNumberField
+
+User = get_user_model()
 
 class RegisterForm(UserCreationForm):
     username = forms.CharField(
@@ -86,7 +88,7 @@ class UserInfoForm(forms.ModelForm):
         widget=forms.FileInput(attrs={'class': "form-control"})
     )
     class Meta:
-        model = Userinfo
+        model = Profile
         fields = ['phone', 'secondary_email', 'present_address', 'permanent_address', 'profile_picture', 'cover_photo']
 
 class UpdateUserForm(forms.ModelForm):

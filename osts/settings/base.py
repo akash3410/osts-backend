@@ -162,6 +162,11 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 # ---- Auth / allauth ------------------------------------------------------
+# Custom user model. This MUST be set before the first migration that creates
+# any FK to the user table, and Django cannot change it once other apps
+# reference it — so it lands early, by design.
+AUTH_USER_MODEL = "userapp.User"
+
 LOGIN_URL = "/"
 LOGIN_REDIRECT_URL = "/user/profile/"
 LOGOUT_REDIRECT_URL = "/"

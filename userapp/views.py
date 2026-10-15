@@ -5,7 +5,7 @@ from django.views.decorators.http import require_POST
 from .forms import LoginForm, RegisterForm, UserInfoForm, UpdateUserForm
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
-from .models import Userinfo
+from .models import Profile
 
 # Create your views here.
 def supperuser_required(user):
@@ -76,18 +76,19 @@ def logout_view(request):
 def edit_user_info(request):
     user = request.user
 
-    if not hasattr(user, 'userinfo'):
-        Userinfo.objects.create(user=user)
+    # get_or_create replaces the old hasattr/create dance — one query, atomic,
+    # and safe on the first ever edit for a user.
+    profile, _ = Profile.objects.get_or_create(user=user)
 
     if request.method == 'POST':
-        form = UserInfoForm(request.POST, request.FILES, instance=user.userinfo)
+        form = UserInfoForm(request.POST, request.FILES, instance=profile)
         userform = UpdateUserForm(request.POST, instance=user)
         if form.is_valid() and userform.is_valid():
             form.save()
             userform.save()
             return redirect('dashboard')
     else:
-        form = UserInfoForm(instance=user.userinfo)
+        form = UserInfoForm(instance=profile)
         userform = UpdateUserForm(instance=user)
     return render(request, 'userapp/editUserInfo.html', {'form': form, 'userform': userform})
 

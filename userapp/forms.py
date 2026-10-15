@@ -29,15 +29,23 @@ class RegisterForm(UserCreationForm):
         label="Confirm Password",
         widget=forms.PasswordInput(attrs={'placeholder': "Confirm Password", 'class': "form-control auth-input", 'autocomplete': "new-password"})
     )
-    is_staff = forms.BooleanField(
-        required=False,
-        label="IS Staff ?",
-        widget=forms.CheckboxInput(attrs={'class': "form-check-input auth-check-input"})
-    )
 
     class Meta:
         model = User
-        fields = ['username', 'first_name', 'last_name', 'email', 'password1', 'password2', 'is_staff']
+        # NOTE: `is_staff` is deliberately NOT here. Staff/superuser status is
+        # a privileged flag granted by an administrator (or the seed command),
+        # never self-selected on a public signup form. See tests/test_auth.py.
+        fields = ['username', 'first_name', 'last_name', 'email', 'password1', 'password2']
+
+    def save(self, commit=True):
+        """Force privileged flags off regardless of what lands in cleaned_data."""
+        user = super().save(commit=False)
+        user.is_staff = False
+        user.is_superuser = False
+        user.is_active = True
+        if commit:
+            user.save()
+        return user
 
 
 class LoginForm(AuthenticationForm):

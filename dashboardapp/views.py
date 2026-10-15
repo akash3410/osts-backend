@@ -56,10 +56,14 @@ def edit_service(request, pk):
 
 @user_passes_test(superuser_or_staff_required)
 def delete_service(request, pk):
+    # Destructive action: POST-only. GET must never delete anything (CSRF,
+    # prefetch-prefetch link scanning, browser prefetch, etc).
+    if request.method != "POST":
+        return redirect("service")
     service = get_object_or_404(Service, pk=pk)
-
     service.delete()
-    return redirect('service')
+    messages.success(request, f"'{service.title}' deleted.")
+    return redirect("service")
 
 @user_passes_test(superuser_or_staff_required)
 def sites_info_view(request):
@@ -76,14 +80,26 @@ def all_message_view(request):
 
 @user_passes_test(superuser_or_staff_required)
 def response_update_view(request, pk):
+    # State toggle: POST-only.
+    if request.method != "POST":
+        return redirect("allmessage")
     message = get_object_or_404(Messages, pk=pk)
     message.response = not message.response
-    message.save()
+    # update_fields + save avoids touching unrelated columns (and the
+    # auto_now response_at stamp on unrelated rows).
+    message.save(update_fields=["response", "response_at"])
     messages.success(request, f"{message.name}'s Response Updated!")
     return redirect("allmessage")
 
-def message_delete_view(requset, pk):
+@user_passes_test(superuser_or_staff_required)
+def message_delete_view(request, pk):
+    # Destructive action: POST-only. Also NOTE: this view previously had NO
+    # staff decorator — any anonymous user could delete messages by hitting
+    # the URL. Both bugs are now closed and covered by tests.
+    if request.method != "POST":
+        return redirect("allmessage")
     message = get_object_or_404(Messages, pk=pk)
+    name = message.name
     message.delete()
-    messages.success(requset, f"{message.name}'s message Deleted!")
+    messages.success(request, f"{name}'s message Deleted!")
     return redirect('allmessage')

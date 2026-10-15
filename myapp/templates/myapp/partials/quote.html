@@ -31,6 +31,11 @@
 
                     <form method="post">
                         {% csrf_token %}
+                        {# Honeypot: visually hidden from humans, filled by bots. #}
+                        {# If present + non-empty, MessageForm rejects the POST.  #}
+                        <div style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;" aria-hidden="true">
+                            {{ form.website_url }}
+                        </div>
                         <div class="row g-3">
                             <div class="col-12 col-sm-6">
                                 {{ form.name }}

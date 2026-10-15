@@ -1,0 +1,20 @@
+{# Reusable POST action button for destructive / state-changing actions.      #}
+{#                                                                            #}
+{# Usage:                                                                     #}
+{#   {% include 'partials/post_button.html' with                             #}
+{#        url_name='deleteservice' obj_id=service.id                         #}
+{#        label='Delete' css_class='text-danger fs-5 ms-3'                   #}
+{#        icon='fa-solid fa-trash' confirm='Delete this service?' %}         #}
+{#                                                                            #}
+{# Renders a tiny inline CSRF-protected form that POSTs, instead of a GET     #}
+{# link. A GET must never mutate state — links get prefetched by browsers     #}
+{# and can be fired cross-site via <img>/<a>, which is a CSRF vector.        #}
+{# `confirm` (optional) adds an inline JS confirm() gate.                     #}
+<form method="post" action="{% url url_name obj_id %}" class="d-inline post-action-form"
+      {% if confirm %}onsubmit="return confirm('{{ confirm|escapejs }}')"{% endif %}>
+    {% csrf_token %}
+    <button type="submit" class="btn btn-link p-0 border-0 align-middle {{ css_class|default:'text-dark' }}"
+            style="text-decoration: none; cursor: pointer;" aria-label="{{ label|default:'Submit' }}">
+        {% if icon %}<i class="{{ icon }}"></i>{% else %}{{ label }}{% endif %}
+    </button>
+</form>

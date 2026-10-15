@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
+from django.conf import settings
+from django.views.decorators.http import require_POST
 from .forms import LoginForm, RegisterForm, UserInfoForm, UpdateUserForm
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
@@ -62,10 +64,13 @@ def login_view(request):
     """Legacy URL — login now lives on the combined auth page."""
     return redirect('/user/auth/?tab=login')
 
+@require_POST
 @login_required
 def logout_view(request):
+    # POST-only logout (OWASP): a GET logout is a CSRF vector — a third-party
+    # site can log a user out with a hidden request or an <img> tag.
     logout(request)
-    return redirect('login')
+    return redirect(settings.LOGOUT_REDIRECT_URL)
 
 @user_passes_test(superuser_or_staffuser_required)
 def edit_user_info(request):

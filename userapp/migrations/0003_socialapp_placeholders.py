@@ -7,6 +7,7 @@ Real credentials can be filled in later with:
     python manage.py seed_social_apps
 or via the Django admin (/admin/socialaccount/socialapp/add).
 """
+from django.conf import settings
 from django.db import migrations
 
 PLACEHOLDER_APPS = [
@@ -20,7 +21,19 @@ def create_placeholder_apps(apps, schema_editor):
     SocialApp = apps.get_model('socialaccount', 'SocialApp')
     Site = apps.get_model('sites', 'Site')
 
-    site = Site.objects.get_current()
+    # Do NOT call Site.objects.get_current() here. That helper reads SITE_ID
+    # and raises Site.DoesNotExist if the row is missing. The default
+    # `example.com` Site is normally created by django.contrib.sites'
+    # *post_migrate* handler, which runs only AFTER every migration has
+    # finished — so on a fresh database (or a test DB built from scratch)
+    # this data migration executes *before* that row exists. Make the
+    # migration self-sufficient: grab the configured site, creating it if it
+    # isn't there yet.
+    site_id = getattr(settings, 'SITE_ID', 1)
+    site, _ = Site.objects.get_or_create(
+        pk=site_id,
+        defaults={'domain': 'example.com', 'name': 'example.com'},
+    )
 
     for spec in PLACEHOLDER_APPS:
         app, created = SocialApp.objects.get_or_create(

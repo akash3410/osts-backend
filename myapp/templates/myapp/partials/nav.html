@@ -67,10 +67,13 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{% url 'logout' %}" class="nav-link dock-link">
-                            <span class="dock-ico"><i class="bi bi-box-arrow-right"></i></span>
-                            <span class="dock-label">Logout</span>
-                        </a>
+                        <form method="post" action="{% url 'logout' %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="nav-link dock-link border-0 bg-transparent w-100" style="cursor: pointer;">
+                                <span class="dock-ico"><i class="bi bi-box-arrow-right"></i></span>
+                                <span class="dock-label">Logout</span>
+                            </button>
+                        </form>
                     </li>
                     {% if user.is_superuser %}
                     <li class="nav-item">

@@ -1,4 +1,6 @@
 from django.db import models
+
+from myapp.managers import InquiryManager
 from phonenumber_field.modelfields import PhoneNumberField
 
 from core.models import TimeStampedModel
@@ -18,6 +20,8 @@ class Inquiry(TimeStampedModel):
         -> ``responded_at``, set explicitly only when the status moves to a
         "responded" state.
     """
+
+    objects = InquiryManager()  # service-layer: inbox(), open(), etc.
 
     class Status(models.TextChoices):
         NEW = "new", "New"

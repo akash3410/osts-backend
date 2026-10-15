@@ -1,5 +1,6 @@
 from django.db import models
 
+from dashboardapp.managers import ServiceManager
 from core.models import ImageOptimizationMixin
 
 
@@ -15,6 +16,8 @@ class Service(ImageOptimizationMixin):
 
     # Self-hosted Pillow pipeline: uploads get EXIF-stripped, resized, WebP.
     IMAGE_SPECS = {"image": (1920, 1440, 480)}
+
+    objects = ServiceManager()  # service-layer: public_list(), active(), etc.
 
     class Meta:
         indexes = [

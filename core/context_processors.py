@@ -44,7 +44,5 @@ def message_in_box(request):
         return {"messagesbox": []}
 
     return {
-        "messagesbox": Inquiry.objects.filter(status=Inquiry.Status.NEW)
-        .order_by("-created_at")
-        .only("id", "name", "created_at", "status")
+        "messagesbox": Inquiry.objects.inbox()[:10]
     }

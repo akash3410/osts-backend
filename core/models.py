@@ -2,6 +2,8 @@ from django.db import models
 from django.utils import timezone
 from phonenumber_field.modelfields import PhoneNumberField
 
+from core.utils.images import image_dimensions_for, optimize_image_field
+
 
 class TimeStampedModel(models.Model):
     """Abstract base: created_at / updated_at on every model.
@@ -61,7 +63,71 @@ class AllObjectsManager(models.Manager):
         return super().get_queryset()
 
 
-class SiteConfiguration(models.Model):
+class ImageOptimizationMixin(models.Model):
+    """Override ``save()`` to run the Pillow pipeline on declared image fields.
+
+    A model opts in by defining::
+
+        IMAGE_SPECS = {
+            # field_name: (max_width, max_height, thumb_size or None)
+            'image': (1600, 1200, 400),
+        }
+
+    Only new uploads are re-encoded, so existing optimized files are untouched.
+    """
+
+    IMAGE_SPECS = {}
+
+    class Meta:
+        abstract = True
+
+    def _image_snapshot(self):
+        return {
+            f: (getattr(self, f).name if getattr(self, f) else '')
+            for f in self.IMAGE_SPECS
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._image_snapshot = self._image_snapshot()
+        self._image_optimizing = False
+
+    def save(self, *args, **kwargs):
+        current = {f: (getattr(self, f).name if getattr(self, f) else '') for f in self.IMAGE_SPECS}
+        super().save(*args, **kwargs)
+        if self._image_optimizing:
+            return
+
+        dirty = []
+        for field, spec in self.IMAGE_SPECS.items():
+            if not current[field]:
+                continue  # field cleared — nothing to process
+            from core.utils.images import image_dimensions_for, optimize_image_field
+            max_w, max_h, thumb = image_dimensions_for(spec)
+            if optimize_image_field(self, field, max_w, max_h, thumb):
+                dirty.append(field)
+
+        if not dirty:
+            self._image_snapshot = current
+            return
+
+        self._image_optimizing = True
+        try:
+            self._image_snapshot = {
+                f: (getattr(self, f).name if getattr(self, f) else '')
+                for f in self.IMAGE_SPECS
+            }
+            super().save(update_fields=dirty)
+        finally:
+            self._image_optimizing = False
+
+class SiteConfiguration(ImageOptimizationMixin):
+    IMAGE_SPECS = {
+        "site_logo": (400, 400, None),
+        "site_bg": (1920, 1080, 480),
+        "about_image": (1200, 800, 480),
+    }
+
     site_name = models.CharField(max_length=255)
     site_logo = models.ImageField(upload_to='logos/', null=True, blank=True)
     site_mail = models.EmailField()

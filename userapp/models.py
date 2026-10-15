@@ -21,6 +21,7 @@ from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 
 from core.models import TimeStampedModel
+from core.models import ImageOptimizationMixin
 
 
 class User(AbstractUser):
@@ -97,8 +98,13 @@ class User(AbstractUser):
         return self.is_superuser or self.has_role(self.ROLE_OWNER)
 
 
-class Profile(TimeStampedModel):
+class Profile(TimeStampedModel, ImageOptimizationMixin):
     """Shared personal info present for every account."""
+
+    IMAGE_SPECS = {
+        "profile_picture": (900, 900, 240),
+        "cover_photo": (1920, 720, 480),
+    }
 
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,

@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "userapp",
     "dashboardapp",
     "core",
+    "projects",
     # Third party
     "phonenumber_field",
     "axes",

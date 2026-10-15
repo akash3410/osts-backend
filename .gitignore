@@ -1,0 +1,36 @@
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+*.egg
+
+# ---- Virtual environments ----
+.venv/
+venv/
+ENV/
+
+# ---- Secrets / env ----
+.env
+.env.*
+!.env.example
+
+# ---- Django runtime artifacts ----
+*.log
+log/
+staticfiles/
+static_root/
+media/*
+!media/.gitkeep
+
+# ---- Local databases (dev only; prod is PostgreSQL) ----
+db.sqlite3
+*.sqlite3
+backup-before-backend-*.sqlite3
+
+# ---- OS / editor noise ----
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp

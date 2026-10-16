@@ -1,0 +1,11 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Invoices</title></head><body>
+<h1>Invoices</h1>
+<table>
+  <thead><tr><th>Number</th><th>Client</th><th>Status</th><th>Total</th><th>Paid</th><th>Balance</th><th></th></tr></thead>
+  <tbody>
+  {% for inv in invoices %}
+    <tr><td>{{ inv.number }}</td><td>{{ inv.client }}</td><td>{{ inv.get_status_display }}</td><td>{{ inv.total }}</td><td>{{ inv.paid_total }}</td><td>{{ inv.balance_due }}</td><td><a href="{% url 'billing:invoice_detail' inv.id %}">view</a></td></tr>
+  {% empty %}<tr><td colspan="7">No invoices yet.</td></tr>{% endfor %}
+  </tbody>
+</table>
+</body></html>

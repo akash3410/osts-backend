@@ -1,0 +1,8 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Initiating payment</title></head><body>
+<p>Redirecting to the payment gateway…</p>
+<form method="post" action="{{ gateway_url }}" id="pay">
+  <input type="hidden" name="tran_id" value="{{ txid }}">
+  <button type="submit">Click if not redirected</button>
+</form>
+<script>document.getElementById('pay').submit();</script>
+</body></html>

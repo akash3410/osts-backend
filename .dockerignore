@@ -1,0 +1,14 @@
+.git
+__pycache__
+*.pyc
+.env
+.env.*
+!.env.example
+!.env.prod.example
+media
+db.sqlite3
+*.sqlite3
+staticfiles
+node_modules
+kaiadmin-lite-1.2.0
+logistica-1.0.0

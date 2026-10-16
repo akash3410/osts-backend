@@ -1,0 +1,71 @@
+# OSTS production-ish local stack. Usage:
+#   docker compose up -d --build
+#   docker compose exec web python manage.py createsuperuser
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: osts
+      POSTGRES_USER: osts
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U osts -d osts"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes", "--requirepass", "${REDIS_PASSWORD:-changeme}"]
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-changeme}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file: .env.prod
+    environment:
+      OSTS_ENV: prod
+      DATABASE_URL: postgres://osts:${POSTGRES_PASSWORD}@db:5432/osts
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/1
+      STATIC_ROOT: /app/staticfiles
+      MEDIA_ROOT: /var/www/media
+    volumes:
+      - media:/var/www/media
+      - staticfiles:/app/staticfiles
+    depends_on:
+      db: { condition: service_healthy }
+      redis: { condition: service_healthy }
+
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/nginx.conf:/etc/nginx/nginx.conf:ro
+      - staticfiles:/var/www/static:ro
+      - media:/var/www/media:ro
+      - ./deploy/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - web
+
+volumes:
+  pg-data:
+  redis-data:
+  media:
+  staticfiles:

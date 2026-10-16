@@ -157,7 +157,7 @@ USE_TZ = True
 
 # ---- Static files (CSS, JavaScript, Images) ------------------------------
 STATIC_URL = "static/"
-STATIC_ROOT = BASE_DIR / "staticfiles"
+STATIC_ROOT = os.getenv("STATIC_ROOT", str(BASE_DIR / "staticfiles"))
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
@@ -201,7 +201,7 @@ SOCIALACCOUNT_PROVIDERS = {
 
 # ---- Media ---------------------------------------------------------------
 MEDIA_URL = "/media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_ROOT = os.environ.get("MEDIA_ROOT", os.path.join(BASE_DIR, "media"))
 
 
 # ---- Email ---------------------------------------------------------------

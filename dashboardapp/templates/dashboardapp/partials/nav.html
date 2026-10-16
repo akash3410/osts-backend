@@ -264,15 +264,21 @@
               aria-expanded="false"
             >
               <div class="avatar-sm">
-                <img
-                  src="{{ user.profile.profile_picture.url }}"
-                  alt="..."
-                  class="avatar-img rounded-circle"
-                />
+                {% if user.profile.profile_picture %}
+                  <img
+                    src="{{ user.profile.profile_picture.url }}"
+                    alt="..."
+                    class="avatar-img rounded-circle"
+                  />
+                {% else %}
+                  <div class="avatar-img rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-bold" style="width: 36px; height: 36px; font-size: 14px;">
+                    {{ user.username|slice:":1"|upper }}
+                  </div>
+                {% endif %}
               </div>
               <span class="profile-username">
                 <span class="op-7">Hi,</span>
-                <span class="fw-bold">{{user.first_name | upper}}</span>
+                <span class="fw-bold">{{user.first_name|default:user.username | upper}}</span>
               </span>
             </a>
             <ul class="dropdown-menu dropdown-user animated fadeIn">
@@ -280,11 +286,17 @@
                 <li>
                   <div class="user-box">
                     <div class="avatar-lg">
-                      <img
-                        src="{{ user.profile.profile_picture.url }}"
-                        alt="image profile"
-                        class="avatar-img rounded"
-                      />
+                      {% if user.profile.profile_picture %}
+                        <img
+                          src="{{ user.profile.profile_picture.url }}"
+                          alt="image profile"
+                          class="avatar-img rounded"
+                        />
+                      {% else %}
+                        <div class="avatar-img rounded bg-primary text-white d-flex align-items-center justify-content-center fw-bold fs-4" style="width: 60px; height: 60px;">
+                          {{ user.username|slice:":1"|upper }}
+                        </div>
+                      {% endif %}
                     </div>
                     <div class="u-text">
                       <h4>{{user.first_name | upper}}</h4>

@@ -1,0 +1,12 @@
+Hello {{ recipient_name }},
+
+Thank you for signing up at {{ site_name }}. Use the code below to verify
+your email and activate your account:
+
+    {{ code }}
+
+This code is valid for {{ ttl_minutes }} minutes. For your security, never
+share this code with anyone.
+
+If you didn't create an account with {{ site_name }}, you can safely ignore
+this email -- no account has been activated.

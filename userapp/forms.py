@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from .models import Profile
+from .utils import generate_username_suggestions
 from phonenumber_field.formfields import PhoneNumberField
 
 User = get_user_model()
@@ -39,6 +40,25 @@ class RegisterForm(UserCreationForm):
         # never self-selected on a public signup form. See tests/test_auth.py.
         fields = ['username', 'first_name', 'last_name', 'email', 'password1', 'password2']
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.username_suggestions = []
+
+    def clean_username(self):
+        username = self.cleaned_data.get("username", "").strip()
+        if not username:
+            return username
+        if User.objects.filter(username__iexact=username).exists():
+            fn = self.data.get("first_name", "")
+            ln = self.data.get("last_name", "")
+            suggestions = generate_username_suggestions(username, first_name=fn, last_name=ln, count=4)
+            self.username_suggestions = suggestions
+            msg = "This username is already taken."
+            if suggestions:
+                msg += f" Available suggestions: {', '.join(suggestions)}"
+            raise forms.ValidationError(msg, code="duplicate_username")
+        return username
+
     def clean_email(self):
         email = self.cleaned_data.get('email', '').strip().lower()
         if email and User.objects.filter(email__iexact=email).exists():
@@ -52,7 +72,7 @@ class RegisterForm(UserCreationForm):
         user = super().save(commit=False)
         user.is_staff = False
         user.is_superuser = False
-        user.is_active = True
+        user.is_active = False  # Account stays inactive until email verification
         if commit:
             user.save()
         return user

@@ -10,7 +10,7 @@
             height="60%"
             width="60%"
             />
-            {% if request.user.is_superuser %} Admin {% else %}  Staff {% endif %}
+            {% if request.user.is_superuser %} Admin {% elif request.user.is_staff %} Staff {% else %} Member {% endif %}
         </a>
         <div class="nav-toggle">
             <button class="btn btn-toggle toggle-sidebar">
@@ -29,6 +29,7 @@
 <div class="sidebar-wrapper scrollbar scrollbar-inner">
     <div class="sidebar-content">
         <ul class="nav nav-secondary">
+          {% if request.user.is_staff or request.user.is_superuser %}
             <li class="nav-item active">
                 <a href="{% url 'dashboard' %}">
                     <i class="fas fa-home"></i>
@@ -262,6 +263,26 @@
                     </ul>
                 </div>
             </li>
+          {% else %}
+            <li class="nav-item active">
+                <a href="{% url 'profile' %}">
+                    <i class="fas fa-user"></i>
+                    <p>My Profile</p>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'EditUserInfo' %}">
+                    <i class="fas fa-user-cog"></i>
+                    <p>Account Settings</p>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'homepage' %}">
+                    <i class="fas fa-home"></i>
+                    <p>Visit Website</p>
+                </a>
+            </li>
+          {% endif %}
         </ul>
     </div>
 </div>

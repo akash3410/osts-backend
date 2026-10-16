@@ -4,6 +4,7 @@ Profile/Client/Employee models, Groups, and the role decorators."""
 import pytest
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group, Permission
+from django.core import mail
 from django.core.exceptions import ValidationError
 from django.test import RequestFactory
 from django.urls import reverse
@@ -304,3 +305,97 @@ class TestSignupOnCustomUser:
         assert "already exists" in form.errors["email"][0]
         # Must NOT expose raw database constraint name
         assert "user_email_unique_when_set" not in resp.content.decode()
+
+    def test_signup_duplicate_username_suggests_available_usernames(self, anon_client, make_user):
+        make_user("alex_taken")
+        payload = {
+            "form_type": "signup",
+            "username": "alex_taken",
+            "first_name": "Alex",
+            "last_name": "Doe",
+            "email": "alex.new@example.com",
+            "password1": "Str0ng-Pass!2026",
+            "password2": "Str0ng-Pass!2026",
+        }
+        resp = anon_client.post(reverse("auth"), payload)
+        assert resp.status_code == 200
+        form = resp.context["signup_form"]
+        assert "username" in form.errors
+        assert len(form.username_suggestions) > 0
+        content = resp.content.decode()
+        assert "Available suggestions" in content or "Suggested usernames" in content
+        for suggestion in form.username_suggestions:
+            assert suggestion in content
+
+    def test_check_username_api_returns_suggestions(self, anon_client, make_user):
+        make_user("taken_guy")
+        # Check taken username
+        resp = anon_client.get(reverse("check_username") + "?username=taken_guy")
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["available"] is False
+        assert len(data["suggestions"]) > 0
+
+        # Check free username
+        resp_free = anon_client.get(reverse("check_username") + "?username=completely_free_user")
+        assert resp_free.status_code == 200
+        data_free = resp_free.json()
+        assert data_free["available"] is True
+        assert data_free["suggestions"] == []
+
+    def test_normal_user_signup_redirects_to_verification(self, anon_client):
+        """Signup must NOT log the user in — it hands off to email verification.
+
+        The account is created inactive, so letting the session authenticate
+        here would make the whole OTP step decorative.
+        """
+        payload = {
+            "form_type": "signup",
+            "username": "normal_signup_user",
+            "first_name": "Normal",
+            "last_name": "User",
+            "email": "normal_signup@example.com",
+            "password1": "Str0ng-Pass!2026",
+            "password2": "Str0ng-Pass!2026",
+        }
+        resp = anon_client.post(reverse("auth"), payload)
+        assert resp.status_code == 302
+        assert resp["Location"] == reverse("verify_email")
+
+        # Still anonymous, and the account is parked until the code lands.
+        assert "_auth_user_id" not in anon_client.session
+        user = User.objects.get(username="normal_signup_user")
+        assert user.is_active is False
+
+    def test_normal_user_login_redirects_to_profile(self, anon_client, make_user):
+        user = make_user("regular_login_user")
+        user.set_password("Secret123!")
+        user.save()
+
+        payload = {
+            "form_type": "login",
+            "username": "regular_login_user",
+            "password": "Secret123!",
+        }
+        resp = anon_client.post(reverse("auth"), payload)
+        assert resp.status_code == 302
+        assert resp["Location"] == reverse("profile")
+
+    def test_normal_user_can_access_profile_page(self, regular_client):
+        resp = regular_client.get(reverse("profile"))
+        assert resp.status_code == 200
+        assert "Profile Details" in resp.content.decode()
+
+    def test_staff_user_login_redirects_to_dashboard(self, anon_client, staff_user):
+        staff_user.set_password("Secret123!")
+        staff_user.save()
+
+        payload = {
+            "form_type": "login",
+            "username": staff_user.username,
+            "password": "Secret123!",
+        }
+        resp = anon_client.post(reverse("auth"), payload)
+        assert resp.status_code == 302
+        assert resp["Location"] == reverse("dashboard")
+

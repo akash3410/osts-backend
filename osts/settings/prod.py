@@ -7,6 +7,8 @@ Every value here is the safe default; nothing depends on a developer machine.
 from .base import *  # noqa: F401,F403
 from .base import env
 
+from django.core.exceptions import ImproperlyConfigured  # noqa: E402
+
 DEBUG = False
 
 # In production both of these MUST be supplied by the environment. We refuse
@@ -54,6 +56,28 @@ X_FRAME_OPTIONS = "DENY"
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_REFERRER_POLICY = "same-origin"
 
+# ---- Email ---------------------------------------------------------------
+# SMTP transport is read in base.py so dev and prod share one definition.
+# Here we only add the production guards: an unconfigured console backend
+# silently "succeeds", so every verification code would be printed to the
+# container log and no user would ever receive one. We refuse to boot instead.
+EMAIL_BACKEND = env("EMAIL_BACKEND")
+if EMAIL_BACKEND == "django.core.mail.backends.console.EmailBackend":
+    raise ImproperlyConfigured(
+        "EMAIL_BACKEND is the console backend in production. Set "
+        "EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend (or a "
+        "transactional provider's backend) in your environment."
+    )
+
+# The SMTP backend is unusable without a host; third-party provider backends
+# (AmazonsES, SendGrid, Postmark...) carry their own credentials, so we only
+# enforce the host when SMTP is actually selected.
+if EMAIL_BACKEND == "django.core.mail.backends.smtp.EmailBackend" and not EMAIL_HOST:
+    raise ImproperlyConfigured(
+        "EMAIL_BACKEND is smtp but EMAIL_HOST is empty. Set EMAIL_HOST "
+        "(e.g. smtp.sendgrid.net) or switch to a provider backend."
+    )
+
 # ---- Passwords -----------------------------------------------------------
 # PBKDF2 is Django's default; scrypt is stronger and available on this box.
 PASSWORD_HASHERS = [
@@ -95,5 +119,12 @@ LOGGING = {
         },
         # Loud on purpose: auth failures and payment flows are auditable.
         "axes": {"handlers": ["console"], "level": "WARNING", "propagate": False},
+        # Verification email delivery failures are security-relevant: they
+        # mean a user is stuck with an inactive account and no code.
+        "userapp": {
+            "handlers": ["console"],
+            "level": env("USERAPP_LOG_LEVEL", default="INFO"),
+            "propagate": False,
+        },
     },
 }

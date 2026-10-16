@@ -180,3 +180,57 @@ class Employee(TimeStampedModel):
 
     def __str__(self):
         return self.user.get_full_name() or self.user.username
+
+
+class EmailVerificationCode(TimeStampedModel):
+    """Temporary 6-digit verification code sent to user email.
+
+    Serves two flows via ``purpose``: signup email verification and
+    password reset. One table keeps the OTP policy (expiry, attempts,
+    rate limits) in a single place instead of duplicating it per flow.
+    """
+
+    class Purpose(models.TextChoices):
+        EMAIL_VERIFICATION = "email_verification", "Email Verification"
+        PASSWORD_RESET = "password_reset", "Password Reset"
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="verification_codes",
+    )
+    code = models.CharField(max_length=6)
+    expires_at = models.DateTimeField()
+    attempts = models.PositiveSmallIntegerField(default=0)
+    is_used = models.BooleanField(default=False)
+    purpose = models.CharField(
+        max_length=20,
+        choices=Purpose.choices,
+        default=Purpose.EMAIL_VERIFICATION,
+    )
+
+    class Meta:
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["user", "-created_at"], name="user_verification_idx"),
+        ]
+
+    def is_expired(self):
+        """True once the code's validity window has elapsed."""
+        from django.utils import timezone
+
+        return timezone.now() > self.expires_at
+
+    def is_valid(self):
+        """Usable right now: unspent, unexpired, and under the attempt cap."""
+        from django.conf import settings
+
+        max_attempts = getattr(settings, "EMAIL_VERIFICATION_MAX_ATTEMPTS", 5)
+        return (
+            not self.is_used
+            and not self.is_expired()
+            and self.attempts < max_attempts
+        )
+
+    def __str__(self):
+        return f"EmailVerificationCode({self.user.username}, {self.code})"

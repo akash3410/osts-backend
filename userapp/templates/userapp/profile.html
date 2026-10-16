@@ -1,37 +1,74 @@
 {% extends 'dashboardapp/index.html' %}
 
-{% block title %} Profile {% endblock%}
+{% block title %} Profile - {{ user.username }} {% endblock %}
 
 {% block content %}
 {% include 'dashboardapp/partials/nav.html' %}
 
-<div class="container">
-    <div class="m-4">
-        <img src="{{ user.profile.cover_photo.url }}" alt="" width="100%" height="300px">
-        <div class="d-flex align-items-center">
-            <img src="{{ user.profile.profile_picture.url }}" alt="" class="rounded-circle mt-2" width="15%" height="10%">
-            <h2 class="ms-5">{{ user.first_name }} {{ user.last_name }}</h2>
+<div class="container py-4">
+    <div class="card shadow-sm border-0 mb-4 overflow-hidden">
+        <!-- Cover Photo or Gradient Fallback -->
+        <div style="height: 240px; width: 100%; position: relative;">
+            {% if user.profile.cover_photo %}
+                <img src="{{ user.profile.cover_photo.url }}" alt="Cover Photo" style="width: 100%; height: 100%; object-fit: cover;">
+            {% else %}
+                <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #1e293b 0%, #3b82f6 100%);"></div>
+            {% endif %}
         </div>
-        <span class="d-block"></span>
-        <hr>
-        <div class="row">
-            <div class="col-3 border p-3">
-                <p class="fs-4 fw-bolder">Intro</p>
-                <hr>
-                <p class="fs-6">Staus: 
-                    {% if user.is_superuser %} 
-                        <strong class="fw-bold">Admin</strong> 
-                    {% else %} 
-                        <strong class="fw-bold">Staff</strong>
-                    {% endif %}
+
+        <!-- Avatar & Name Header -->
+        <div class="card-body pt-0 px-4">
+            <div class="d-flex flex-wrap align-items-end justify-content-between" style="margin-top: -60px;">
+                <div class="d-flex align-items-end gap-3">
+                    <div style="width: 120px; height: 120px; border-radius: 50%; overflow: hidden; border: 4px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.15); background: #f8fafc;" class="d-flex align-items-center justify-content-center">
+                        {% if user.profile.profile_picture %}
+                            <img src="{{ user.profile.profile_picture.url }}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover;">
+                        {% else %}
+                            <div class="w-100 h-100 bg-primary text-white d-flex align-items-center justify-content-center fw-bold fs-2">
+                                {{ user.username|slice:":1"|upper }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-2">
+                        <h2 class="mb-0 fw-bold">{{ user.first_name }} {{ user.last_name|default:"" }}</h2>
+                        <span class="text-muted">@{{ user.username }}</span>
+                        <span class="badge ms-2 {% if user.is_superuser %}bg-danger{% elif user.is_staff %}bg-primary{% else %}bg-success{% endif %}">
+                            {% if user.is_superuser %}Admin{% elif user.is_staff %}Staff{% else %}Member{% endif %}
+                        </span>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <a href="{% url 'EditUserInfo' %}" class="btn btn-outline-primary btn-sm px-3">
+                        <i class="fa fa-user-edit me-1"></i> Edit Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Details Section -->
+    <div class="row">
+        <div class="col-lg-4 col-md-5 mb-4">
+            <div class="card border-0 shadow-sm p-3">
+                <h5 class="fw-bold mb-3 border-bottom pb-2">Profile Details</h5>
+                <ul class="list-unstyled mb-0" style="line-height: 2;">
+                    <li><strong class="text-muted">Username:</strong> {{ user.username }}</li>
+                    <li><strong class="text-muted">Primary Email:</strong> {{ user.email|default:"Not specified" }}</li>
+                    <li><strong class="text-muted">Secondary Email:</strong> {{ user.profile.secondary_email|default:"Not specified" }}</li>
+                    <li><strong class="text-muted">Phone:</strong> {{ user.profile.phone|default:"Not specified" }}</li>
+                    <li><strong class="text-muted">Lives in:</strong> {{ user.profile.present_address|default:"Not specified" }}</li>
+                    <li><strong class="text-muted">From:</strong> {{ user.profile.permanent_address|default:"Not specified" }}</li>
+                    <li><strong class="text-muted">Joined:</strong> {{ user.date_joined|date:"M d, Y" }}</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-lg-8 col-md-7 mb-4">
+            <div class="card border-0 shadow-sm p-4">
+                <h5 class="fw-bold mb-3 border-bottom pb-2">About</h5>
+                <p class="text-muted">
+                    {{ user.profile.bio|default:"No bio provided yet. Click 'Edit Profile' to introduce yourself!"|linebreaksbr }}
                 </p>
-                <p class="fs-6">Username: <strong class="fw-bold">{{user.username}}</strong></p>
-                <p class="fs-6">Lives in <strong class="fw-bold">{{user.profile.present_address}}</strong></p>
-                <p class="fs-6">From <strong class="fw-bold">{{user.profile.permanent_address}}</strong></p>
-                <p class="fs-6">Phone: <strong class="fw-bold">{{user.profile.phone}}</strong></p>
-                <p class="fs-6">Email: <strong class="fw-bold">{{user.email}}</strong></p>
-                <p class="fs-6">Email: <strong class="fw-bold">{{user.profile.secondary_email}}</strong></p>
-                <a href="{% url 'EditUserInfo' %}" class="btn btn-outline-secondary w-100 text-dark">Edit User Info</a>
             </div>
         </div>
     </div>

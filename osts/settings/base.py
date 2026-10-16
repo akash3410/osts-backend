@@ -207,12 +207,53 @@ MEDIA_ROOT = os.environ.get("MEDIA_ROOT", os.path.join(BASE_DIR, "media"))
 
 # ---- Email ---------------------------------------------------------------
 # Console backend by default so nothing silently tries to hit a real SMTP
-# server in development. Override in prod.
+# server in development. Set EMAIL_BACKEND=...smtp... in .env to deliver real
+# mail locally (e.g. Gmail SMTP with an app password).
 EMAIL_BACKEND = env(
     "EMAIL_BACKEND",
     default="django.core.mail.backends.console.EmailBackend",
 )
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="noreply@osts.local")
+
+# SMTP transport. Read here, not in prod.py: dev needs them too, or setting
+# EMAIL_BACKEND=smtp in .env silently falls back to Django's unauthenticated
+# localhost:25 default and mail never leaves the machine.
+EMAIL_HOST = env("EMAIL_HOST", default="")
+EMAIL_PORT = env.int("EMAIL_PORT", default=587)
+EMAIL_HOST_USER = env("EMAIL_HOST_USER", default="")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
+# STARTTLS on 587, implicit TLS on 465 — let the port decide unless overridden.
+EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=EMAIL_PORT == 587)
+EMAIL_USE_SSL = env.bool("EMAIL_USE_SSL", default=EMAIL_PORT == 465)
+EMAIL_TIMEOUT = env.int("EMAIL_TIMEOUT", default=10)
+SERVER_EMAIL = env("SERVER_EMAIL", default=DEFAULT_FROM_EMAIL)
+
+
+# ---- Email verification (signup OTP) -------------------------------------
+# Single source of truth for the OTP policy. `userapp.models` and
+# `userapp.services.verification` both read from here so the numbers can
+# never drift apart between the model, the service, and the view.
+EMAIL_VERIFICATION_CODE_TTL_MINUTES = env.int(
+    "EMAIL_VERIFICATION_CODE_TTL_MINUTES", default=15
+)
+# Wrong guesses allowed before a code is burned and the user must resend.
+EMAIL_VERIFICATION_MAX_ATTEMPTS = env.int(
+    "EMAIL_VERIFICATION_MAX_ATTEMPTS", default=5
+)
+# Minimum gap between two sends to the same user (anti email-bombing).
+# Must stay in sync with the client-side countdown in verify_email.html.
+EMAIL_VERIFICATION_RESEND_COOLDOWN_SECONDS = env.int(
+    "EMAIL_VERIFICATION_RESEND_COOLDOWN_SECONDS", default=30
+)
+# Hard per-day cap per user, so a compromised endpoint can't run up an
+# SMTP bill or get us blocklisted.
+EMAIL_VERIFICATION_DAILY_LIMIT = env.int(
+    "EMAIL_VERIFICATION_DAILY_LIMIT", default=5
+)
+# How long the session may hold a pending verification before it expires.
+EMAIL_VERIFICATION_SESSION_TTL_SECONDS = env.int(
+    "EMAIL_VERIFICATION_SESSION_TTL_SECONDS", default=1800  # 30 minutes
+)
 
 
 # ---- Cache (Redis when configured, else local memory) --------------------

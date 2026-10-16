@@ -75,6 +75,18 @@
                     {% for error in signup_form.username.errors %}<p>{{ error }}</p>{% endfor %}
                 </div>
             {% endif %}
+            {% if signup_form.username_suggestions %}
+                <div class="username-suggestions-box" style="margin: 6px 0 10px; font-size: 13px;">
+                    <span style="color: #64748b; font-size: 12px;">Suggested usernames (click to use):</span>
+                    <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px;">
+                        {% for suggestion in signup_form.username_suggestions %}
+                            <button type="button" class="suggestion-chip" onclick="applySuggestedUsername('{{ suggestion }}')" style="background:#e0e7ff;color:#4338ca;border:1px solid #c7d2fe;border-radius:12px;padding:2px 10px;font-size:12px;cursor:pointer;font-weight:500;">
+                                {{ suggestion }}
+                            </button>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
 
             <div class="auth-field{% if signup_form.email.errors %} has-error{% endif %}">
                 <span class="auth-icon"><i class="bi bi-envelope"></i></span>
@@ -156,7 +168,7 @@
             {% endif %}
 
             <div class="auth-links">
-                <a href="#">Forget password?</a>
+                <a href="{% url 'forgot_password' %}">Forget password?</a>
                 <a href="{% url 'homepage' %}">Back to home…</a>
             </div>
 
@@ -168,29 +180,77 @@
 
 </div>
 <script>
+window.applySuggestedUsername = function(suggestedName) {
+  const signupUsername = document.querySelector('#panel-signup input[name="username"]');
+  const statusEl = document.getElementById('usernameStatus');
+  if (signupUsername) {
+    signupUsername.value = suggestedName;
+    signupUsername.focus();
+    if (statusEl) {
+      statusEl.style.color = '#10b981';
+      statusEl.innerHTML = '✓ <strong>' + suggestedName + '</strong> is available!';
+    }
+  }
+};
+
 (function(){
-  const field = document.getElementById('id_username');
+  const field = document.querySelector('#panel-signup input[name="username"]');
   const statusEl = document.getElementById('usernameStatus');
   if (!field || !statusEl) return;
-  let t = null;
+
+  let timer = null;
+
   async function check(){
-    const v = field.value.trim();
-    if (v.length < 3){ statusEl.textContent = v ? 'min 3 chars' : ''; return; }
+    const val = field.value.trim();
+    if (!val) {
+      statusEl.textContent = '';
+      return;
+    }
+    if (val.length < 3) {
+      statusEl.style.color = '#f59e0b';
+      statusEl.textContent = 'Username must be at least 3 characters.';
+      return;
+    }
+
+    const fn = (document.querySelector('#panel-signup input[name="first_name"]')?.value || '').trim();
+    const ln = (document.querySelector('#panel-signup input[name="last_name"]')?.value || '').trim();
+    const query = new URLSearchParams({
+      username: val,
+      first_name: fn,
+      last_name: ln
+    });
+
     try {
-      const r = await fetch('{% url "check_username" %}?username=' + encodeURIComponent(v));
-      const d = await r.json();
-      if (d.available){
-        statusEl.style.color='#198754';
-        statusEl.textContent='✓ Username is available';
+      const response = await fetch('{% url "check_username" %}?' + query.toString());
+      if (!response.ok) return;
+      const data = await response.json();
+
+      if (data.available) {
+        statusEl.style.color = '#10b981';
+        statusEl.innerHTML = '✓ <strong>' + val + '</strong> is available';
       } else {
-        statusEl.style.color='#dc3545';
-        const sugg = (d.suggestions||[]).map(s=>'<span style="text-decoration:underline;cursor:pointer;margin:0 4px" onclick="document.getElementById('id_username').value=this.textContent;window.checkUsername&&window.checkUsername()">'+s+'</span>').join(' ');
-        statusEl.innerHTML = '✗ Taken. Try: ' + sugg;
+        statusEl.style.color = '#ef4444';
+        let html = '✗ <strong>' + val + '</strong> is taken.';
+        if (data.suggestions && data.suggestions.length > 0) {
+          html += '<div style="margin-top: 4px; display: flex; flex-wrap: wrap; gap: 4px; align-items: center;"><span style="color:#64748b; font-size:11px;">Try:</span>';
+          data.suggestions.forEach(function(s) {
+            html += '<button type="button" onclick="applySuggestedUsername(\'' + s.replace(/'/g, "\\'") + '\')" style="background:#e0e7ff;color:#4338ca;border:1px solid #c7d2fe;border-radius:12px;padding:1px 8px;font-size:11px;cursor:pointer;font-weight:500;">' + s + '</button>';
+          });
+          html += '</div>';
+        }
+        statusEl.innerHTML = html;
       }
-    } catch(e){ statusEl.textContent=''; }
+    } catch(e) {
+      // Network or parse error: clear silently
+      statusEl.textContent = '';
+    }
   }
+
   window.checkUsername = check;
-  field.addEventListener('input', function(){ clearTimeout(t); t=setTimeout(check,300); });
+  field.addEventListener('input', function() {
+    clearTimeout(timer);
+    timer = setTimeout(check, 350);
+  });
   field.addEventListener('blur', check);
 })();
 </script>

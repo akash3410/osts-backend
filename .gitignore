@@ -6,6 +6,7 @@ __pycache__/
 *.egg
 
 # ---- Virtual environments ----
+.venv
 .venv/
 venv/
 ENV/
@@ -33,4 +34,5 @@ backup-before-backend-*.sqlite3
 Thumbs.db
 .idea/
 .vscode/
+pyrightconfig.json
 *.swp

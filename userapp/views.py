@@ -1,11 +1,12 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import login, logout
+from django.contrib.auth import get_user_model, login, logout
 from django.conf import settings
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
 from .forms import LoginForm, RegisterForm, UserInfoForm, UpdateUserForm
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
-from .models import Profile
+from django.http import JsonResponse
+User = get_user_model()
 
 # Create your views here.
 def supperuser_required(user):
@@ -72,7 +73,31 @@ def logout_view(request):
     logout(request)
     return redirect(settings.LOGOUT_REDIRECT_URL)
 
-@user_passes_test(superuser_or_staffuser_required)
+@require_GET
+def check_username(request):
+    """Return whether a candidate username is free, plus suggestions."""
+    import re as _re
+    import random as _rnd
+    raw = (request.GET.get('username') or '').strip()
+    occupied = User.objects.filter(username__iexact=raw).exists() if raw else True
+    invalid = (not raw) or len(raw) < 3 or len(raw) > 150 or bool(_re.search(r'[^A-Za-z0-9_.-]', raw))
+    available = raw and not occupied and not invalid
+
+    suggestions = []
+    if raw and not available:
+        base = _re.sub(r'[^A-Za-z0-9_.-]', '', raw) or 'user'
+        candidates = [f"{base}1", f"{base}2", f"{base}_{_rnd.randint(100,999)}"]
+        seen = set()
+        for cand in candidates:
+            if cand in seen or len(cand) > 150: continue
+            seen.add(cand)
+            if not User.objects.filter(username__iexact=cand).exists():
+                suggestions.append(cand)
+                if len(suggestions) >= 3: break
+    return JsonResponse({'available': bool(available), 'suggestions': suggestions, 'username': raw})
+
+
+@login_required
 def edit_user_info(request):
     user = request.user
 
@@ -93,5 +118,8 @@ def edit_user_info(request):
     return render(request, 'userapp/editUserInfo.html', {'form': form, 'userform': userform})
 
 @user_passes_test(superuser_or_staffuser_required)
+@login_required
 def profile_view(request):
-    return render(request, 'userapp/profile.html')
+    # get_or_create (not get) so a user without a profile still renders.
+    profile, _ = Profile.objects.get_or_create(user=request.user)
+    return render(request, 'userapp/profile.html', {'profile': profile})

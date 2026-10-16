@@ -19,7 +19,7 @@ class RegisterForm(UserCreationForm):
         label="Last Name",
         widget=forms.TextInput(attrs={'placeholder': "Last Name", 'class': 'form-control auth-input'})
     )
-    email = forms.CharField(
+    email = forms.EmailField(
         label="Email",
         widget=forms.EmailInput(attrs={'placeholder': "Enter Your Email", 'class': "form-control auth-input", 'autocomplete': "email"})
     )
@@ -38,6 +38,14 @@ class RegisterForm(UserCreationForm):
         # a privileged flag granted by an administrator (or the seed command),
         # never self-selected on a public signup form. See tests/test_auth.py.
         fields = ['username', 'first_name', 'last_name', 'email', 'password1', 'password2']
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email', '').strip().lower()
+        if email and User.objects.filter(email__iexact=email).exists():
+            raise forms.ValidationError(
+                "An account with this email address already exists. Please log in."
+            )
+        return email
 
     def save(self, commit=True):
         """Force privileged flags off regardless of what lands in cleaned_data."""

@@ -285,3 +285,22 @@ class TestSignupOnCustomUser:
         assert u.is_staff is False
         assert u.is_superuser is False
         assert not u.groups.exists()  # no role assigned on signup
+
+    def test_signup_duplicate_email_shows_friendly_field_error(self, anon_client, make_user):
+        make_user("existing_user", email="taken@example.com")
+        payload = {
+            "form_type": "signup",
+            "username": "fresh_user",
+            "first_name": "Fresh",
+            "last_name": "User",
+            "email": "taken@example.com",
+            "password1": "Str0ng-Pass!2026",
+            "password2": "Str0ng-Pass!2026",
+        }
+        resp = anon_client.post(reverse("auth"), payload)
+        assert resp.status_code == 200
+        form = resp.context["signup_form"]
+        assert "email" in form.errors
+        assert "already exists" in form.errors["email"][0]
+        # Must NOT expose raw database constraint name
+        assert "user_email_unique_when_set" not in resp.content.decode()

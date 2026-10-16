@@ -69,6 +69,7 @@
                 <span class="auth-icon"><i class="bi bi-at"></i></span>
                 {{ signup_form.username }}
             </div>
+            <div id="usernameStatus" style="font-size:12px;margin-top:4px;min-height:16px;"></div>
             {% if signup_form.username.errors %}
                 <div class="auth-field-errors">
                     {% for error in signup_form.username.errors %}<p>{{ error }}</p>{% endfor %}
@@ -166,4 +167,31 @@
     </section>
 
 </div>
+<script>
+(function(){
+  const field = document.getElementById('id_username');
+  const statusEl = document.getElementById('usernameStatus');
+  if (!field || !statusEl) return;
+  let t = null;
+  async function check(){
+    const v = field.value.trim();
+    if (v.length < 3){ statusEl.textContent = v ? 'min 3 chars' : ''; return; }
+    try {
+      const r = await fetch('{% url "check_username" %}?username=' + encodeURIComponent(v));
+      const d = await r.json();
+      if (d.available){
+        statusEl.style.color='#198754';
+        statusEl.textContent='✓ Username is available';
+      } else {
+        statusEl.style.color='#dc3545';
+        const sugg = (d.suggestions||[]).map(s=>'<span style="text-decoration:underline;cursor:pointer;margin:0 4px" onclick="document.getElementById('id_username').value=this.textContent;window.checkUsername&&window.checkUsername()">'+s+'</span>').join(' ');
+        statusEl.innerHTML = '✗ Taken. Try: ' + sugg;
+      }
+    } catch(e){ statusEl.textContent=''; }
+  }
+  window.checkUsername = check;
+  field.addEventListener('input', function(){ clearTimeout(t); t=setTimeout(check,300); });
+  field.addEventListener('blur', check);
+})();
+</script>
 {% endblock %}

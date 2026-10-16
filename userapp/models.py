@@ -56,6 +56,7 @@ class User(AbstractUser):
                 fields=["email"],
                 condition=~models.Q(email=""),
                 name="user_email_unique_when_set",
+                violation_error_message="A user with this email address already exists.",
             ),
         ]
         indexes = [

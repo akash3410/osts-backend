@@ -129,6 +129,26 @@ class SiteConfiguration(ImageOptimizationMixin):
     }
 
     site_name = models.CharField(max_length=255)
+
+    def save(self, *args, **kwargs):
+        result = super().save(*args, **kwargs)
+        # The context processor + about/fact partials cache this singleton.
+        # Bust the cache right after any (possibly optimized) write.
+        try:
+            from django.core.cache import cache
+            cache.delete('core:site_configuration')
+        except Exception:
+            pass
+        return result
+
+    def delete(self, *args, **kwargs):
+        result = super().delete(*args, **kwargs)
+        try:
+            from django.core.cache import cache
+            cache.delete('core:site_configuration')
+        except Exception:
+            pass
+        return result
     site_logo = models.ImageField(upload_to='logos/', null=True, blank=True)
     site_mail = models.EmailField()
     site_phone = PhoneNumberField(region='BD', null=True, blank=True)

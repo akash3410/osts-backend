@@ -129,26 +129,6 @@ class SiteConfiguration(ImageOptimizationMixin):
     }
 
     site_name = models.CharField(max_length=255)
-
-    def save(self, *args, **kwargs):
-        result = super().save(*args, **kwargs)
-        # The context processor + about/fact partials cache this singleton.
-        # Bust the cache right after any (possibly optimized) write.
-        try:
-            from django.core.cache import cache
-            cache.delete('core:site_configuration')
-        except Exception:
-            pass
-        return result
-
-    def delete(self, *args, **kwargs):
-        result = super().delete(*args, **kwargs)
-        try:
-            from django.core.cache import cache
-            cache.delete('core:site_configuration')
-        except Exception:
-            pass
-        return result
     site_logo = models.ImageField(upload_to='logos/', null=True, blank=True)
     site_mail = models.EmailField()
     site_phone = PhoneNumberField(region='BD', null=True, blank=True)
@@ -171,7 +151,23 @@ class SiteConfiguration(ImageOptimizationMixin):
     def save(self, *args, **kwargs):
         if SiteConfiguration.objects.exists() and not self.pk:
             raise ValueError("Only one instance of SiteConfiguration can be created.")
-        super().save(*args, **kwargs)
+        result = super().save(*args, **kwargs)  # runs image optimization (mixin) + model save
+        # Bust the cached singleton in the context processor immediately.
+        try:
+            from django.core.cache import cache
+            cache.delete('core:site_configuration')
+        except Exception:
+            pass
+        return result
+
+    def delete(self, *args, **kwargs):
+        result = super().delete(*args, **kwargs)
+        try:
+            from django.core.cache import cache
+            cache.delete('core:site_configuration')
+        except Exception:
+            pass
+        return result
 
     def __str__(self):
         return self.site_name

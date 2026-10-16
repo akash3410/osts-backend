@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "core",
     "projects",
     "billing",
+    "notifications",
     # Third party
     "phonenumber_field",
     "axes",

@@ -96,11 +96,17 @@ def finalize_invoice(invoice):
     invoice.recalc()
     from django.utils import timezone
 
-    if invoice.status == 'draft':
+    was_draft = invoice.status == 'draft'
+    if was_draft:
         invoice.issued_at = invoice.issued_at or timezone.now().date()
         invoice.mark_sent()
     else:
         invoice.save(update_fields=['subtotal', 'tax_total', 'total', 'updated_at'])
+
+    # Notify on first send.
+    if was_draft:
+        from notifications.services import invoice_sent as _invoice_sent
+        _invoice_sent(invoice)
     return invoice
 
 
@@ -159,6 +165,10 @@ def apply_payment_to_invoice(*, invoice, amount, method='system', paid_at=None,
         attempt=attempt,
     )
     payment.save()  # allocates number
+
+    # Notify on received payment.
+    from notifications.services import payment_received as _payment_received
+    _payment_received(payment)
 
     # Idempotency (level 3): update paid_total atomically.
     invoice.paid_total = (invoice.paid_total or Decimal('0.00')) + amount

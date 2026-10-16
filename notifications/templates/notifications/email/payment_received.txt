@@ -1,0 +1,12 @@
+{% autoescape off %}
+Subject: {{ site_name }} — Payment {{ payment.number }} received
+
+Hi {{ payment.client.user.first_name|default:payment.client.user.username }},
+
+A payment of {{ payment.amount }} {{ payment.currency }} has been received for invoice {{ payment.invoice.number }}.
+
+Invoice balance remaining: {{ payment.invoice.balance_due }} {{ payment.invoice.currency }}.
+
+Thank you,
+{{ site_name }}
+{% endautoescape %}

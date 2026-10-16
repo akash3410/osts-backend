@@ -243,7 +243,7 @@ class Invoice(TimeStampedModel):
 
     @property
     def balance_due(self):
-        return (self.total - self.paid_total).quantize(Decimal('0.01'))
+        return (Decimal(self.total or 0) - Decimal(self.paid_total or 0)).quantize(Decimal('0.01'))
 
     @property
     def is_paid(self):

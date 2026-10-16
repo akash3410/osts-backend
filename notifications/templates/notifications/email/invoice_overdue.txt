@@ -1,0 +1,13 @@
+{% autoescape off %}
+Subject: {{ site_name }} — Invoice {{ invoice.number }} is overdue
+
+Hi {{ invoice.client.user.first_name|default:invoice.client.user.username }},
+
+Invoice {{ invoice.number }} ({{ invoice.balance_due }} {{ invoice.currency }}) is overdue since {{ due_date }}.
+
+Please settle it as soon as possible:
+{{ site_url }}/billing/invoices/{{ invoice.pk }}/
+
+Thank you,
+{{ site_name }}
+{% endautoescape %}

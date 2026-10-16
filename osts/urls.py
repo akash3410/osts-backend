@@ -26,6 +26,7 @@ urlpatterns = [
     path('user/', include('userapp.urls')),
     path('user/dashboard/', include('dashboardapp.urls')),
     path('billing/', include('billing.urls')),
+    path('notifications/', include('notifications.urls')),
     path('user/dashboard/core/', include('core.urls')),
 ]
 

@@ -1,0 +1,14 @@
+{% autoescape off %}
+Subject: {{ site_name }} — Invoice {{ invoice.number }} has been sent
+
+Hi {{ invoice.client.user.first_name|default:invoice.client.user.username }},
+
+Your invoice {{ invoice.number }} for {{ invoice.total }} {{ invoice.currency }} has been sent.
+
+{% if due_date %}Due date: {{ due_date }}{% endif %}
+
+View it online: {{ site_url }}/billing/invoices/{{ invoice.pk }}/
+
+Thank you,
+{{ site_name }}
+{% endautoescape %}

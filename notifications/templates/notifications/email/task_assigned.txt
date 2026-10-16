@@ -1,0 +1,12 @@
+{% autoescape off %}
+Subject: {{ site_name }} — Task assigned: {{ task.title }}
+
+Hi {{ user.first_name|default:user.username }},
+
+You have been assigned to task "{{ task.title }}" in milestone "{{ milestone.title }}".
+
+View project: {{ site_url }}
+
+Thank you,
+{{ site_name }}
+{% endautoescape %}

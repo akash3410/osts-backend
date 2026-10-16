@@ -1,0 +1,12 @@
+{% autoescape off %}
+Subject: {{ site_name }} — You were added to project {{ project.name }}
+
+Hi {{ user.first_name|default:user.username }},
+
+You have been added to project "{{ project.name }}".
+
+View it: {{ site_url }}
+
+Thank you,
+{{ site_name }}
+{% endautoescape %}

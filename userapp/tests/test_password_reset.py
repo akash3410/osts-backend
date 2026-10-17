@@ -85,19 +85,23 @@ class TestRequestReset:
         assert code in mail.outbox[0].body
         assert code in mail.outbox[0].alternatives[0][0]
 
-    def test_unknown_email_shows_same_message(self, anon_client):
-        """No user enumeration: identical response for a missing address."""
+    def test_unknown_email_stays_on_forgot_page(self, anon_client):
+        """No user enumeration: identical response for a missing address.
+
+        Stays on the forgot-password page rather than redirecting, so the
+        user sees only one message (a redirect would flash a second,
+        contradictory one from the reset page).
+        """
         resp = anon_client.post(
             reverse("forgot_password"), {"email": "nobody@example.com"}
         )
 
-        assert resp.status_code == 302
-        assert resp["Location"] == reverse("reset_password")
+        assert resp.status_code == 200
         assert len(mail.outbox) == 0
 
     def test_unknown_email_renders_same_text(self, anon_client):
         resp = anon_client.post(
-            reverse("forgot_password"), {"email": "nobody@example.com"}, follow=True
+            reverse("forgot_password"), {"email": "nobody@example.com"}
         )
         body = resp.content.decode()
 
@@ -281,12 +285,32 @@ class TestResetPasswordView:
         assert existing_user.check_password(PASSWORD) is True
 
     def test_unknown_email_redirects_to_forgot(self, anon_client):
-        resp = anon_client.get(
-            reverse("reset_password"), {"email": "ghost@example.com"}
-        )
+        resp = anon_client.get(reverse("reset_password"))
 
         assert resp.status_code == 302
         assert resp["Location"] == reverse("forgot_password")
+
+    def test_email_stored_in_session(self, anon_client, existing_user):
+        """The email must be in the session so step 2 can find the user."""
+        anon_client.post(reverse("forgot_password"), {"email": existing_user.email})
+
+        assert anon_client.session["password_reset_email"] == existing_user.email
+
+    def test_session_cleared_after_success(self, anon_client, existing_user):
+        """The session email must be cleared after a successful reset."""
+        anon_client.post(reverse("forgot_password"), {"email": existing_user.email})
+        code = latest_reset_code("reset_user").code
+
+        anon_client.post(
+            reverse("reset_password"),
+            {
+                "code": code,
+                "new_password": NEW_PASSWORD,
+                "confirm_password": NEW_PASSWORD,
+            },
+        )
+
+        assert "password_reset_email" not in anon_client.session
 
     def test_authenticated_user_is_redirected(self, regular_client):
         resp = regular_client.get(reverse("reset_password"))

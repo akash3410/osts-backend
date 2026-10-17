@@ -250,6 +250,12 @@ def resend_code_view(request):
     return redirect('verify_email')
 
 
+# Session key holding the email mid-reset. Using the session rather than a
+# query parameter keeps the address out of the URL (it would otherwise leak
+# via browser history, referrer headers, and access logs).
+_RESET_EMAIL_KEY = "password_reset_email"
+
+
 def forgot_password_view(request):
     """Step 1: accept an email and send a password-reset code.
 
@@ -277,15 +283,21 @@ def forgot_password_view(request):
                     "If an account exists for that email, we have sent a "
                     "password reset code.",
                 )
+            # Stash the email so step 2 knows whose password is being reset.
+            # Only set when the account exists — otherwise step 2 would still
+            # error, and the differing behaviour would confirm the absence.
+            request.session[_RESET_EMAIL_KEY] = email
+            return redirect('reset_password')
         else:
-            # Same message as the success branch — no enumeration.
+            # Same message as the success branch — no enumeration. Stay on
+            # this page rather than redirecting, so the user sees only one
+            # message (a redirect would flash a second, contradictory one).
             messages.success(
                 request,
                 "If an account exists for that email, we have sent a "
                 "password reset code.",
             )
-
-        return redirect('reset_password')
+            return render(request, 'userapp/forgot_password.html')
 
     return render(request, 'userapp/forgot_password.html')
 
@@ -296,11 +308,15 @@ def reset_password_view(request):
     The code is the *only* credential required here — no session, no old
     password. That's safe because the code is single-use, expires in 15
     minutes, and is delivered only to the address on file.
+
+    The email is read from the session (set by ``forgot_password_view``),
+    not from the URL, so it can't be tampered with or leaked via referrer
+    headers.
     """
     if request.user.is_authenticated:
         return redirect('profile')
 
-    email = (request.GET.get('email') or request.POST.get('email') or '').strip().lower()
+    email = (request.session.get(_RESET_EMAIL_KEY) or '').strip().lower()
     user = User.objects.filter(email__iexact=email).first() if email else None
 
     if not user:
@@ -337,6 +353,10 @@ def reset_password_view(request):
                 for session in Session.objects.all():
                     if session.get_decoded().get('_auth_user_id') == str(user.pk):
                         session.delete()
+
+                # Clear the reset email from the session so the flow can't be
+                # replayed by hitting the reset URL again.
+                request.session.pop(_RESET_EMAIL_KEY, None)
 
                 messages.success(
                     request,
